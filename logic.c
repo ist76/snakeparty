@@ -56,20 +56,25 @@ cpoint SetHead (cpoint neck, cpoint vect, cpoint border)
 }
 
 // Must be run for the first time before the game loop
-cpoint GetApple(cpoint const *gamemap, int const *len1, cpoint const *body1, int const *len2, cpoint const *body2)
+
+fruit GetFruit(cpoint const *gamemap, int const *len1, cpoint const *body1, int const *len2, cpoint const *body2)
 {
-    cpoint new;
+    fruit new;
     do
     {
-          new.x = rand() % gamemap->x;
-          new.y = rand() % gamemap->y;
+          new.coord.x = rand() % gamemap->x;
+          new.coord.y = rand() % gamemap->y;
     }
-    while ((IfCannibal(&new, len1, body1) == 1) && (IfCannibal(&new, len2, body2) == 1));
+    while ((IfCannibal(&new.coord, len1, body1) == 1) && (IfCannibal(&new.coord, len2, body2) == 1));
+    int FruitWeight = rand();
+    if (FruitWeight % 7 == 0) new.price = ColorGold;
+    else if (FruitWeight % 9 == 0) new.price = ColorBlack;
+    else new.price = ColorRed;
     return new;
 }
 
 // The game loop checks for the return value. If "0" is received, SnakeRestart is called
-int SnakeLogic(cpoint const *gamemap, cpoint *apple, int *ticks, snake *vyper, snake * wutu)
+int SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, snake * wutu)
 {
      SetVectr(&vyper->vectr, &vyper->newvectr, &vyper->len);
      if ((vyper->vectr.x == 0) && (vyper->vectr.y == 0)) return 0;  // --> the snake stands still, skip
@@ -82,15 +87,13 @@ int SnakeLogic(cpoint const *gamemap, cpoint *apple, int *ticks, snake *vyper, s
              return 1;            // --> restart round
         }
      
-     if ((IfCannibal(apple, &vyper->len, vyper->body)) || ((head.x == apple->x) && (head.y == apple->y))) // not good (((
+     if ((IfCannibal(&apple->coord, &vyper->len, vyper->body)) || ((head.x == apple->coord.x) && (head.y == apple->coord.y))) // not good (((
      {
-          vyper->coins = (vyper->len%10 == 0)?                 // Score growth depending on tail length
-                         (vyper->coins + 50*vyper->len):       // If the length is a multiple of 10
-                         (vyper->coins + 95 + 5*vyper->len);   // Else
-
-          ++vyper->len; // The snake has become longer, and the coordinate of the tail has already moved to where we need it
+          vyper->coins = vyper->coins + 95 + 5*vyper->len * apple->price;
+          vyper->len = (apple->price != ColorBlack) ? vyper->len + 1 : (vyper->len / 3) + 1;
+          //++vyper->len; // The snake has become longer, and the coordinate of the tail has already moved to where we need it
           *ticks = *ticks >=128 ? *ticks -1 : *ticks;  // Speed ​​up the game with every apple you eat
-          *apple = GetApple(gamemap, &vyper->len, vyper->body, &wutu->len, wutu->body);
+          *apple = GetFruit(gamemap, &vyper->len, vyper->body, &wutu->len, wutu->body);
      }
      
      for (int i = vyper->len; i > 0; --i) vyper->body[i] = vyper->body[i-1];

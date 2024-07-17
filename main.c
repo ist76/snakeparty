@@ -17,13 +17,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
-     savedata gsets = ReadSavegame();                              // Get previously saved data
-     int GameTicks;                                                       // Latency (in ms) between game loops
-     snake anaconda = {.win = 0};                                       // First snake
-     snake bushmaster = {.win = 0};                                     // Second snake
-     RECT ScoreTable;                                                     // Size of score table
-     SetRect(&ScoreTable, 0, 0, 7 * gsets.gamescale, (gsets.gamemap.x/3 - 1) * gsets.gamescale + gsets.gamescale/2);  // Size of scoretable's window
-
+     savedata gsets = ReadSavegame();                                                                                 // Get previously saved data
+     int GameTicks;                                                                                                   // Latency (ms) between game loops
+     snake anaconda = {.win = 0};                                                                                     // First snake
+     snake bushmaster = {.win = 0};                                                                                   // Second snake
+     RECT ScoreTable;                                                                                                 // Size of score table
+     SetRect(&ScoreTable, 0, 0, 7 * gsets.gamescale, (gsets.gamemap.x/3 - 1) * gsets.gamescale + gsets.gamescale/2);
      
      // Very very stupid translate section!!!
      wchar_t str1008[13];
@@ -66,12 +65,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                                OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, PROOF_QUALITY, DEFAULT_PITCH | FF_SWISS, FALSE);     
      // Make Scoreboard 1
      HWND scores1 = CreateWindowW(L"static", NULL, SS_CENTER | WS_VISIBLE | WS_CHILD , (gsets.gamemap.x+1)*gsets.gamescale, gsets.gamescale/2,
-                                 ScoreTable.right, ScoreTable.bottom, hwnd, NULL, NULL, NULL);
+                                  ScoreTable.right, ScoreTable.bottom, hwnd, NULL, NULL, NULL);
 
      // Make Scoreboard 2
      HWND scores2 = CreateWindowW(L"static", NULL, SS_CENTER | WS_VISIBLE | WS_CHILD , (gsets.gamemap.x+1)*gsets.gamescale,
-                                   ScoreTable.bottom + 1 * gsets.gamescale + gsets.gamescale/2,
-                                   ScoreTable.right, ScoreTable.bottom, hwnd, NULL, NULL, NULL);
+                                  ScoreTable.bottom + 1 * gsets.gamescale + gsets.gamescale/2,
+                                  ScoreTable.right, ScoreTable.bottom, hwnd, NULL, NULL, NULL);
 
      // Make main menu
      HMENU MenuBar = CreateMenu();
@@ -80,13 +79,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
           AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu1, str1008);
           AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu2, str1009);
-          AppendMenuW(MenuBar, MF_STRING, 1100, str1100);
+          AppendMenuW(MenuBar,   MF_STRING,                           1100, str1100);
             
           AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == SMALLMAPX  ? MF_CHECKED : MF_UNCHECKED), 1001, str1001);
           AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == MEDIUMMAPX ? MF_CHECKED : MF_UNCHECKED), 1002, str1002);
           AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == LARGEMAPX  ? MF_CHECKED : MF_UNCHECKED), 1003, str1003);
-          AppendMenuW(hPopMenu2, MF_STRING | (gsets.gamescale == BIGSCALE   ? MF_CHECKED : MF_UNCHECKED), 1011, str1011);
-          AppendMenuW(hPopMenu2, MF_STRING | (gsets.gamescale == HUGESCALE  ? MF_CHECKED : MF_UNCHECKED), 1012, str1012);
+          AppendMenuW(hPopMenu2, MF_STRING | (gsets.gamescale    == BIGSCALE   ? MF_CHECKED : MF_UNCHECKED), 1011, str1011);
+          AppendMenuW(hPopMenu2, MF_STRING | (gsets.gamescale    == HUGESCALE  ? MF_CHECKED : MF_UNCHECKED), 1012, str1012);
 
           SetMenu(hwnd, MenuBar);
           SetMenu(hwnd, hPopMenu1);
@@ -94,7 +93,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
      
      srand(GetTickCount());                                                                                   // For generate Apple
      SnakeRestart(&gsets.gamemap, &anaconda, &bushmaster, &GameTicks);                                        // Game initialization
-     cpoint apple = GetApple(&gsets.gamemap, &anaconda.len,anaconda.body, &bushmaster.len, bushmaster.body);  // And the creation of an apple
+     fruit apple = GetFruit(&gsets.gamemap, &anaconda.len,anaconda.body, &bushmaster.len, bushmaster.body);   // And the creation of an apple
      DWORD next_game_tick = GetTickCount();                                                                   // Timer for game loop
      DWORD next_render_tick = GetTickCount();                                                                 // Timer for render loop
      MSG msg;                                                                                                 // Messages from app
@@ -145,7 +144,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
               ActorsShow(dc, &gsets.gamemap, gsets.gamescale, anaconda.body, anaconda.len, bushmaster.body, bushmaster.len, &apple);
               ReleaseDC(game_map, dc);
               
-              next_render_tick += 16;    // ~60fps
+              next_render_tick += RENDERLAG;
           }
      }
      return 0;

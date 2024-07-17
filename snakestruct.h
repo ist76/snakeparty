@@ -14,3 +14,16 @@ typedef struct snake      // All snake data
      int win;             // Wins counter
      cpoint body[254];    // An array of segment coordinates (I hope 254 is enough for everyone)
 } snake;
+
+enum FruitColor
+{
+     ColorBlack = -10,
+     ColorRed = 1,
+     ColorGold = 5,
+};
+
+typedef struct fruit
+{
+     cpoint coord;
+     int price;
+} fruit;

@@ -8,7 +8,7 @@
 #include "winproc.h"
 
 // Draw level and the game actors
-void ActorsShow(HDC dc, cpoint const *gamemap, int scale, cpoint const *body1, int len1, cpoint const *body2, int len2, cpoint const *apple)
+void ActorsShow(HDC dc, cpoint const *gamemap, int scale, cpoint const *body1, int len1, cpoint const *body2, int len2, fruit const *apple)
 {
      HDC memDC = CreateCompatibleDC(dc);
      HBITMAP memBM = CreateCompatibleBitmap(dc, gamemap->x * scale, gamemap->y * scale);
@@ -35,8 +35,20 @@ void ActorsShow(HDC dc, cpoint const *gamemap, int scale, cpoint const *body1, i
      SelectObject(memDC, GetStockObject(DC_BRUSH));
      SetDCPenColor(memDC, RGB(8, 16, 8));
      int gChan = 16;  // Reg or Gold apple
-     SetDCBrushColor(memDC, RGB(249, gChan, 16));
-               Ellipse(memDC, apple->x*scale +2, apple->y*scale +2, (apple->x+1)*scale -2, (apple->y+1)*scale -2);
+     switch (apple->price)
+     {
+     case ColorGold:
+          SetDCBrushColor(memDC, 0x000080FF);
+          break;
+     case ColorBlack:
+          SetDCBrushColor(memDC, 0x00080808);
+          break;     
+     default:
+          SetDCBrushColor(memDC, 0x000000FF);
+          break;
+     }
+     
+               Ellipse(memDC, apple->coord.x*scale +2, apple->coord.y*scale +2, (apple->coord.x+1)*scale -2, (apple->coord.y+1)*scale -2);
 
      // Draw Snake1
      SetDCBrushColor(memDC, RGB(0, 16, 255));

@@ -9,6 +9,7 @@
 #define LARGEMAPY 24
 #define BIGSCALE 32
 #define HUGESCALE 38
+#define RENDERLAG 16  // Pause (ms) between game level redraw cycles
 
 typedef struct savedata
 {
@@ -17,11 +18,11 @@ typedef struct savedata
      int lang;        // Interface language (only 0 or 1)
 } savedata;
 
-int SnakeLogic(cpoint const *gamemap, cpoint *apple, int *ticks, snake *vyper, snake * wutu);
+int SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, snake * wutu);
 savedata ReadSavegame();
-cpoint GetApple(cpoint const *gamemap, int const *len1, cpoint const *body1, int const *len2, cpoint const *body2);
+fruit GetFruit(cpoint const *gamemap, int const *len1, cpoint const *body1, int const *len2, cpoint const *body2);
 void SnakeRestart(cpoint const *gamemap, snake *vyper, snake *wutu, int *ticks);
-void ActorsShow(HDC dc, cpoint const *gamemap, int scale, cpoint const *body1, int len1, cpoint const *body2, int len2, cpoint const *apple);
+void ActorsShow(HDC dc, cpoint const *gamemap, int scale, cpoint const *body1, int len1, cpoint const *body2, int len2, fruit const *apple);
 void ScoresShow(HDC dc, int scale, int coins, int win, HFONT font, RECT * const rt, int lang);
 void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * next_tick);
 void DispatchMenu(WPARAM val, cpoint * map, int * scale, int * lang);
