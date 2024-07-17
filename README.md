@@ -2,6 +2,8 @@
 
 _Snake game for two players. Written in C and WinAPI, compiled in the MinGW64 environment_
 
+![Snake Party](https://github.com/ist76/snakeparty/blob/main/Screenshot.PNG?raw=true)
+
 ## About
 Variation of the game "Snake" for two players. Further development [Lonely Snake](https://github.com/ist76/lonelysnake).
 - Very small size (~20kb without icon) of the executable file
