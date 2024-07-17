@@ -16,5 +16,8 @@ Variation of the game "Snake" for two players. Further development [Lonely Snake
 The "bin" folder already contains an executable file compiled for 64-bit systems. You only need him. The game creates a settings file in its working directory. Removing it resets the settings to default. Place it in any place convenient for you.
 If you want to build the game from the source yourself, the makefile is attached. I compiled the application in MinGW-w64 && MSYS2 environment. I guess there shouldn't be any problems.
 
+## Game
+Controls for the first player are the "W-S-A-D" keys on the keyboard. For the second - cursor keys. Points are awarded for “eaten” apples. Spent on movement. The player whose points run out loses. When the “snake” goes beyond the edges of the field, it appears on the opposite edge of the map. You can't bite yourself, it's a loss. You can pass through your opponent, this has no consequences.
+
 ## License
 Of course, you can use all or any part of the code provided (do you really want to?). I'm not sure about the specific license version under which the code could be published (due to -static -lgdi32). There's no point in thinking about it yet.
