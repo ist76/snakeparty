@@ -1,5 +1,6 @@
 # Snake Party
-* Snake game for two players. Written in C and WinAPI, compiled in the MinGW64 environment *
+
+_Snake game for two players. Written in C and WinAPI, compiled in the MinGW64 environment_
 
 ## About
 Variation of the game "Snake" for two players. Further development [Lonely Snake](https://github.com/ist76/lonelysnake).
