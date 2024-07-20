@@ -86,18 +86,18 @@ void SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, s
 {
      SetVectr(&vyper->vectr, &vyper->newvectr, &vyper->len);
      if (!(vyper->vectr.x) && !(vyper->vectr.y))
-          return;                 // --> the snake stands still, skip
+          return;                  // --> the snake stands still, skip
 
      cpoint head = SetHead(vyper->body[0], vyper->vectr, *gamemap);
      if (((vyper->len != 1) && IfPointArray(&head, vyper)) ||
-         (vyper->coins < 0))      // Don't bite yourself, and don't waste all coins else:
+         (vyper->coins < 0))       // Don't bite yourself, and don't waste all coins else:
      {
           wutu->win++;
           SnakeRestart(gamemap, vyper, wutu, ticks, apple);
-          return;            // --> restart round
+          return;                  // --> restart round
      }
 
-     if (IfPointArray(&apple->coord, vyper) || ((head.x == apple->coord.x) && (head.y == apple->coord.y))) // not good (((
+     if (IfPointArray(&apple->coord, vyper) || ((head.x == apple->coord.x) && (head.y == apple->coord.y)))
      {
           vyper->coins = vyper->coins + 95 + 5*vyper->len * apple->price;
           vyper->len = (apple->price != ColorBlack) ? vyper->len + 1 : (vyper->len / 3) + 1;
@@ -109,7 +109,7 @@ void SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, s
      {
           vyper->body[i] = vyper->body[i-1];
      }
-     vyper->body[0] = head; // insert head to body
+     vyper->body[0] = head;        // insert head to body
      vyper->coins -= (vyper->len <= 64) ?  1 : 3;
-     return;                  // --> normal exit
+     return;                       // --> normal exit
 }

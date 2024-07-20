@@ -137,8 +137,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
           while(GetTickCount() > next_game_tick)
           {
-               SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &anaconda, &bushmaster);
-               SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &bushmaster, &anaconda);
+              SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &anaconda, &bushmaster);
+              SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &bushmaster, &anaconda);
 
               // We calculate the coordinates of all actors not every 16ms, but only ever GameTick
               GetSnakeCells(AllActors.ASnake, anaconda.body, anaconda.len, gsets.gamescale);
