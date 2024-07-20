@@ -6,8 +6,8 @@ _Snake game for two players. Written in C and WinAPI, compiled in the MinGW64 en
 
 ## About
 Variation of the game "Snake" for two players. Further development [Lonely Snake](https://github.com/ist76/lonelysnake).
-- Very small size (~20kb without icon) of the executable file
-- Simple and obvious (hopefully) source code with comments
+- Very small size (~25kb without icon) of the executable file
+- Simple and obvious (hopefully) source code
 - MSVS was not used either during writing or during assembly, the entire project can be assembled with one command in the console
 - Two interface languages ​​to choose from. Only two, it’s hardcoded, but by editing the source code, a version for any language should be done in a couple of minutes.
 - WinAPI is used to display the game. All the functions are old, I suspect that the game will be built without edits or with minimal edits even for 32-bit Windows XP. On the other hand, OSes other than the Windows family are absolutely not supported (for obvious reasons). However, the game logic is separated from the interface and nothing prevents you from writing a new interface.
