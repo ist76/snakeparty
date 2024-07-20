@@ -5,7 +5,7 @@ BIN = snake2
 # Flags
 CFLAGS += -Os -s -static -municode -mwindows -march=core2
 
-SRC =  src/main.c src/logic.c src/winproc.c src/winio.c src/app.res src/icon.res
+SRC =  main.c logic.c winproc.c winio.c
 OBJ = $(SRC:.c=.o)
 
 BIN := $(BIN).exe
