@@ -30,25 +30,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
              (gsets.gamemap.x/3 - 1) * gsets.gamescale + gsets.gamescale/2);
      GetGrid(&AllActors, gsets.gamemap, gsets.gamescale);                    // Array of points to draw the frid
      GetSnakeColors(&AllActors);
-
-     // Very very stupid translate section!!!
-     wchar_t str1008[13];
-     _swprintf(str1008, gsets.lang == 1 ? L"Размер карты" : L"Map size");
-     wchar_t str1009[8];
-     _swprintf(str1009, gsets.lang == 1 ? L"Масштаб" : L"Scale");
-     wchar_t str1100[9];
-     _swprintf(str1100, gsets.lang == 1 ? L"Ру -> En" : L"En -> Ру");
-     wchar_t str1001[6];
-     _swprintf(str1001, gsets.lang == 1 ? L"Малый" : L"Small");
-     wchar_t str1002[8];
-     _swprintf(str1002, gsets.lang == 1 ? L"Средний" : L"Medium");
-     wchar_t str1003[8];
-     _swprintf(str1003, gsets.lang == 1 ? L"Большой" : L"Large");
-     wchar_t str1011[8];
-     _swprintf(str1011, gsets.lang == 1 ? L"Крупный" : L"Big");
-     wchar_t str1012[9];
-     _swprintf(str1012, gsets.lang == 1 ? L"Огромный" : L"Huge");
-     // End of very stupid translate section
+     gamelang translate = ReadGamelang(gsets.lang);
+     //WriteGameLang();
 
      // Create all GUI
      WNDCLASSW wcl;
@@ -86,15 +69,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
           HMENU hPopMenu1 = CreatePopupMenu();
           HMENU hPopMenu2 = CreatePopupMenu();
 
-          AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu1, str1008);
-          AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu2, str1009);
-          AppendMenuW(MenuBar,   MF_STRING,                           1100, str1100);
+          AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu1, translate.str1008);
+          AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu2, translate.str1009);
+          AppendMenuW(MenuBar,   MF_STRING,                           1100, translate.str1100);
 
-          AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == SMALLMAPX  ? MF_CHECKED : MF_UNCHECKED), 1001, str1001);
-          AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == MEDIUMMAPX ? MF_CHECKED : MF_UNCHECKED), 1002, str1002);
-          AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == LARGEMAPX  ? MF_CHECKED : MF_UNCHECKED), 1003, str1003);
-          AppendMenuW(hPopMenu2, MF_STRING | (gsets.gamescale    == BIGSCALE   ? MF_CHECKED : MF_UNCHECKED), 1011, str1011);
-          AppendMenuW(hPopMenu2, MF_STRING | (gsets.gamescale    == HUGESCALE  ? MF_CHECKED : MF_UNCHECKED), 1012, str1012);
+          AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == SMALLMAPX  ? MF_CHECKED : MF_UNCHECKED), 1001, translate.str1001);
+          AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == MEDIUMMAPX ? MF_CHECKED : MF_UNCHECKED), 1002, translate.str1002);
+          AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == LARGEMAPX  ? MF_CHECKED : MF_UNCHECKED), 1003, translate.str1003);
+          AppendMenuW(hPopMenu2, MF_STRING | (gsets.gamescale    == BIGSCALE   ? MF_CHECKED : MF_UNCHECKED), 1011, translate.str1011);
+          AppendMenuW(hPopMenu2, MF_STRING | (gsets.gamescale    == HUGESCALE  ? MF_CHECKED : MF_UNCHECKED), 1012, translate.str1012);
 
           SetMenu(hwnd, MenuBar);
           SetMenu(hwnd, hPopMenu1);

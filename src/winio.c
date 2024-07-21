@@ -107,6 +107,45 @@ savedata ReadSavegame() // No comments..
      return usersave;
 }
 
+gamelang ReadGamelang(int num)
+{
+     gamelang userlang = { .str1001 = L"Small",    .str1002 = L"Medium",        .str1003 = L"Large",
+                           .str1008 = L"Map size", .str1009 = L"Scale",         .str1011 = L"Big",
+                           .str1012 = L"Huge",     .str1013 = L"Single Player", .str1014 = L"Coop",
+                           .str1100 = L"Lang",     .str1110 = L"Game Mode",
+                           .str1501 = L"\nScore:\n\n%07i\n\nWins:\n\n%i",
+                           .str1502 = L"\nScore\n\n%07i\n\nMax Score\n\n%07i",
+                           .str1503 = L"\nTo start the game \njust select a direction\n\nSelecting direction - \narrows or «W S A D»\non the keyboard\n\nEscape - pause\n\n\nAll changes to game \nsettings require a \nrestart\n",
+                         };
+     if (num)
+     {
+          HANDLE hFile = CreateFile(L"snake.lng", GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+          if (INVALID_HANDLE_VALUE == hFile) return userlang; // FIXME! Write check correctness later
+          ReadFile(hFile, &userlang, sizeof(userlang), NULL, NULL);
+          CloseHandle(hFile);
+     }
+     return userlang;
+}
+
+// Special function for make translation file
+/*
+void WriteGameLang(void)
+{
+     gamelang userlang = { .str1001 = L"Малый",        .str1002 = L"Средний",        .str1003 = L"Большой",
+                           .str1008 = L"Размер карты", .str1009 = L"Масштаб",        .str1011 = L"Крупный",
+                           .str1012 = L"Огромный",     .str1013 = L"Одиночная игра", .str1014 = L"Кооператив",
+                           .str1100 = L"Язык Рус -> Eng",         .str1110 = L"Режим игры",
+                           .str1501 = L"\nОчков:\n\n%07i\n\nПобед:\n\n%i",
+                           .str1502 = L"\nОчков:\n\n%07i\n\nРекорд\n\n%07i",
+                           .str1503 = L"\nВыберите направление \nчтобы играть\n\nУправление: \nстрелки или «W S A D»\nна клавиатуре\n\nEscape - пауза\n\n\nИзменение всех \nнастроек требуют\nперезапуска\n",
+                         };
+     HANDLE hFile = CreateFile(L"snake.lng", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+     if (INVALID_HANDLE_VALUE == hFile) return;
+     WriteFile(hFile, &userlang, sizeof(userlang), NULL, NULL);
+     CloseHandle(hFile);
+}
+*/
+
 void WriteSavegame(cpoint maps, int scale, int lang)
 {
      HANDLE hFile = CreateFile(L"snake2.sav", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);

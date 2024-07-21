@@ -9,7 +9,7 @@ typedef struct actors
     int ALen;          // Anaconda len
     int BLen;          // Bushmaster len
     int GLen;          // Level grid array len
-    int AColor[253];
+    int AColor[253];   //  Snake sectors color array
     int BColor[253];
     int AppleColor;    // Apple RGB color
 } actors;

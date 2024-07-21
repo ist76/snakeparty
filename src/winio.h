@@ -15,11 +15,32 @@ typedef struct savedata
 {
      cpoint gamemap;  // Level size in cells
      int gamescale;   // Interface scale
+     int gamemode;    // 0 - singleplayer 1 - COOP
      int lang;        // Interface language (only 0 or 1)
 } savedata;
 
+typedef struct gamelang
+{
+     wchar_t str1008[16];   // Map size
+     wchar_t str1009[16];   // Scale
+     wchar_t str1110[16];   // Game Mode
+     wchar_t str1100[16];   // Lang
+     wchar_t str1001[16];   // Small
+     wchar_t str1002[16];   // Medium
+     wchar_t str1003[16];   // Large
+     wchar_t str1011[16];   // Big
+     wchar_t str1012[16];   // Huge
+     wchar_t str1013[16];   // Single Player
+     wchar_t str1014[16];   // Coop
+     wchar_t str1501[63];   // Scoreboard Message1
+     wchar_t str1502[63];   // Scoreboard Message2
+     wchar_t str1503[254];  // Scoreboard Message3
+} gamelang;
+
 savedata ReadSavegame();
+gamelang ReadGamelang(int num);
 void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * next_tick);
 void DispatchMenu(WPARAM val, cpoint * map, int * scale, int * lang);
 void WriteSavegame(cpoint maps, int scale, int lang);
 void RunAppCopy(void);
+//void WriteGameLang(void);  // See winio.c
