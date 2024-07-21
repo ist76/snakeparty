@@ -7,27 +7,39 @@
 #include "winproc.h"
 
 // Calculate Snake's coords before rendering
-void GetSnakeCells(RECT *SnakeCells, cpoint const *body, int len, int scale)
+void GetSnakesCells(actors *allobj, snake const *vyper, snake const *wutu, int scale)
 {
-     for (int i = 0; i < len; i++)
+     allobj->ALen = vyper->len;
+     allobj->BLen = wutu->len;
+
+     for (int i = 0; i < vyper->len; i++)
      {
-          SnakeCells[i].left    = body[i].x * scale;
-          SnakeCells[i].top     = body[i].y * scale;
-          SnakeCells[i].right   = (body[i].x + 1) * scale;
-          SnakeCells[i].bottom  = (body[i].y + 1) * scale;
+          allobj->ASnake[i].left   =  vyper->body[i].x * scale;
+          allobj->ASnake[i].top    =  vyper->body[i].y * scale;
+          allobj->ASnake[i].right  = (vyper->body[i].x + 1) * scale;
+          allobj->ASnake[i].bottom = (vyper->body[i].y + 1) * scale;
+     }
+
+     for (int i = 0; i < wutu->len; i++)
+     {
+          allobj->BSnake[i].left   =  wutu->body[i].x * scale;
+          allobj->BSnake[i].top    =  wutu->body[i].y * scale;
+          allobj->BSnake[i].right  = (wutu->body[i].x + 1) * scale;
+          allobj->BSnake[i].bottom = (wutu->body[i].y + 1) * scale;
      }
 }
 
 // Calculate Snake's cells color gradient (one time)
 void GetSnakeColors(actors *allobj)
 {
-     for (int i = 0; i <= 31; i++)
+     for (int i = 0; i <= 63; i++)
      {
           allobj->AColor[i] = allobj->AColor[126 - i] = allobj->AColor[126 + i] = allobj->AColor[253 - i]
                             = RGB(i * 4, 249, 255 - i * 4);
           allobj->BColor[i] = allobj->BColor[126 - i] = allobj->BColor[126 + i] = allobj->BColor[253 - i]
-                            = RGB(240, i * 4, 255 - i * 2);
+                            = RGB(191 + i, i * 4, 255 - i);
      }
+     for (int i = 0; i < 253; i++) printf("%x  ", allobj->BColor[i]);
 }
 
 // Calculate grid lines only one time, use every 16ms
@@ -76,35 +88,42 @@ void SetApple(actors *allobj, fruit *apple, int scale)
      allobj->RApple.bottom = (apple->coord.y + 1) * scale - 2;
 }
 
-void DrawSnake(HDC sdc, RECT const *body, int len, int *rectcolor)
-{
-     SetDCBrushColor(sdc, RGB(0, 16, 255));
-     int round = (body[0].right - body[0].left) / 4; // In order not to drag the scale, we calculate again
-     for (int i = 0; i < len; i++)
-     {
-          SetDCBrushColor(sdc, rectcolor[i]);
-          RoundRect(sdc, body[i].left, body[i].top,
-                    body[i].right, body[i].bottom, round, round);
-     }
-}
-
-void DrawGrid(HDC sdc, RECT const *grid, int gridlen)
+void DrawGrid(HDC sdc, actors const *allobj)
 {
      SelectObject(sdc, GetStockObject(DC_PEN));
      SetDCPenColor(sdc, RGB(212, 224, 212));
-     for (int i = 0; i < gridlen; i++)
+     for (int i = 0; i < allobj->GLen; i++)
      {
-          MoveToEx(sdc, grid[i].left, grid[i].top, NULL);
-          LineTo  (sdc, grid[i].right, grid[i].bottom);
+          MoveToEx(sdc, allobj->Grid[i].left, allobj->Grid[i].top, NULL);
+          LineTo  (sdc, allobj->Grid[i].right, allobj->Grid[i].bottom);
      }
 }
 
-void DrawApple(HDC sdc, actors allobj)
+void DrawSnakes(HDC sdc, actors const *allobj)
+{
+     int round = (allobj->ASnake[0].right - allobj->ASnake[0].left) / 4; // In order not to drag the scale, we calculate again
+     for (int i = 0; i < allobj->ALen; i++)
+     {
+          SetDCPenColor(sdc, 0x00008000);
+          SetDCBrushColor(sdc, allobj->AColor[i]);
+          RoundRect(sdc, allobj->ASnake[i].left, allobj->ASnake[i].top,
+                    allobj->ASnake[i].right, allobj->ASnake[i].bottom, round, round);
+     }
+     for (int i = 0; i < allobj->BLen; i++)
+     {
+          SetDCPenColor(sdc, 0x00000080);
+          SetDCBrushColor(sdc, allobj->BColor[i]);
+          RoundRect(sdc, allobj->BSnake[i].left, allobj->BSnake[i].top,
+                    allobj->BSnake[i].right, allobj->BSnake[i].bottom, round, round);
+     }
+}
+
+void DrawApple(HDC sdc, actors *allobj)
 {
      SelectObject(sdc, GetStockObject(DC_BRUSH));
      SetDCPenColor(sdc, RGB(8, 16, 8));
-     SetDCBrushColor(sdc, allobj.AppleColor);
-     Ellipse(sdc, allobj.RApple.left, allobj.RApple.top, allobj.RApple.right, allobj.RApple.bottom);
+     SetDCBrushColor(sdc, allobj->AppleColor);
+     Ellipse(sdc, allobj->RApple.left, allobj->RApple.top, allobj->RApple.right, allobj->RApple.bottom);
 }
 
 // Draw level and the game actors
@@ -119,10 +138,9 @@ void ActorsShow(HDC dc, actors *allobj, fruit const *apple)
      SetDCBrushColor(memDC, RGB(248, 248, 224));
           Rectangle(memDC, 0, 0, allobj->LewelWin.x, allobj->LewelWin.y);
 
-     DrawGrid(memDC, allobj->Grid, allobj->GLen);
-     DrawApple(memDC, *allobj);
-     DrawSnake(memDC, allobj->ASnake, allobj->ALen, allobj->AColor);
-     DrawSnake(memDC, allobj->BSnake, allobj->BLen, allobj->BColor);
+     DrawGrid(memDC, allobj);
+     DrawApple(memDC, allobj);
+     DrawSnakes(memDC, allobj);
 
      BitBlt(dc, 0, 0, allobj->LewelWin.x, allobj->LewelWin.y, memDC, 0, 0, SRCCOPY);
      DeleteDC(memDC);

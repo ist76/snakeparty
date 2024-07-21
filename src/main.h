@@ -1,8 +1,8 @@
 // Declarations for main()
 
-void SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, snake * wutu);
+int SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, snake * wutu);
 void SnakeRestart(cpoint const *gamemap, snake *vyper, snake *wutu, int *ticks, fruit *apple);
-void GetSnakeCells(RECT *SnakeCells, cpoint const *body, int len, int scale);
+void GetSnakesCells(actors *allobj, snake const *vyper, snake const *wutu, int scale);
 void GetSnakeColors(actors *allobj);
 void GetGrid(actors *allobj, cpoint map, int scale);
 void SetApple(actors *allobj, fruit *apple, int scale);

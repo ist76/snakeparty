@@ -66,7 +66,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
      // Separate window with game level
      HWND game_map = CreateWindowW(L"static", NULL, WS_VISIBLE | WS_CHILD , gsets.gamescale/2,
-                                   gsets.gamescale/2, gsets.gamemap.x*gsets.gamescale, gsets.gamemap.y*gsets.gamescale, hwnd, NULL, NULL, NULL);
+                                   gsets.gamescale/2, AllActors.LewelWin.x, AllActors.LewelWin.y, hwnd, NULL, NULL, NULL);
 
      // Make Scoreboard 1
      HWND scores1 = CreateWindowW(L"static", NULL, SS_CENTER | WS_VISIBLE | WS_CHILD , (gsets.gamemap.x+1)*gsets.gamescale, gsets.gamescale/2,
@@ -138,15 +138,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
           while(GetTickCount() > next_game_tick)
           {
-              SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &anaconda, &bushmaster);
-              SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &bushmaster, &anaconda);
+              if (!SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &anaconda, &bushmaster) ||
+                  !SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &bushmaster, &anaconda))
+                  {
+                        SnakeRestart(&gsets.gamemap, &anaconda, &bushmaster, &GameTicks, &apple);
+                  }
 
               // We calculate the coordinates of all actors not every 16ms, but only ever GameTick
-              GetSnakeCells(AllActors.ASnake, anaconda.body, anaconda.len, gsets.gamescale);
-              AllActors.ALen = anaconda.len;
-              GetSnakeCells(AllActors.BSnake, bushmaster.body, bushmaster.len, gsets.gamescale);
-              AllActors.BLen = bushmaster.len;
               SetApple(&AllActors, &apple, gsets.gamescale);
+              GetSnakesCells(&AllActors, &anaconda, &bushmaster, gsets.gamescale);
 
               dc = GetDC(scores1);  // Draw scores 1
               ScoresShow(dc, anaconda.coins, anaconda.win, hFont, &ScoreTable, gsets.lang);

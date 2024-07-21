@@ -82,20 +82,19 @@ cpoint SetHead (cpoint neck, cpoint vect, cpoint border)
 }
 
 // The game logic
-void SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, snake * wutu)
+int SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, snake * wutu)
 {
      SetVectr(&vyper->vectr, &vyper->newvectr, &vyper->len);
      if (!(vyper->vectr.x) && !(vyper->vectr.y))
-          return;                  // --> the snake stands still, skip
+          return -1;               // --> the snake stands still, skip
 
      cpoint head = SetHead(vyper->body[0], vyper->vectr, *gamemap);
      if (((vyper->len != 1) && IfPointArray(&head, vyper)) ||
-         (vyper->coins < 0))       // Don't bite yourself, and don't waste all coins else:
+          (vyper->coins < 0))      // Don't bite yourself, and don't waste all coins else:
      {
           wutu->win++;
-          SnakeRestart(gamemap, vyper, wutu, ticks, apple);
-          return;                  // --> restart round
-     }
+          return 0;                // --> restart round (Need run SnakeRestart() from main()!!! )
+     }                             // if restart from here, the snakes switch places
 
      if (IfPointArray(&apple->coord, vyper) || ((head.x == apple->coord.x) && (head.y == apple->coord.y)))
      {
@@ -111,5 +110,5 @@ void SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, s
      }
      vyper->body[0] = head;        // insert head to body
      vyper->coins -= (vyper->len <= 64) ?  1 : 3;
-     return;                       // --> normal exit
+     return 1;                     // --> normal exit
 }
