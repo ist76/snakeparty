@@ -7,11 +7,9 @@
 #include "winproc.h"
 
 // Calculate Snake's coords before rendering
-void GetSnakesCells(actors *allobj, snake const *vyper, snake const *wutu, int scale)
+void GetSnakesCells(actors *allobj, snake const *vyper, snake const *wutu, int scale, int mode)
 {
      allobj->ALen = vyper->len;
-     allobj->BLen = wutu->len;
-
      for (int i = 0; i < vyper->len; i++)
      {
           allobj->ASnake[i].left   =  vyper->body[i].x * scale;
@@ -19,7 +17,9 @@ void GetSnakesCells(actors *allobj, snake const *vyper, snake const *wutu, int s
           allobj->ASnake[i].right  = (vyper->body[i].x + 1) * scale;
           allobj->ASnake[i].bottom = (vyper->body[i].y + 1) * scale;
      }
+     if (!mode) return;  // Single Player
 
+     allobj->BLen = wutu->len;
      for (int i = 0; i < wutu->len; i++)
      {
           allobj->BSnake[i].left   =  wutu->body[i].x * scale;
@@ -30,16 +30,18 @@ void GetSnakesCells(actors *allobj, snake const *vyper, snake const *wutu, int s
 }
 
 // Calculate Snake's cells color gradient (one time)
-void GetSnakeColors(actors *allobj)
+void GetSnakeColors(actors *allobj, int mode)
 {
      for (int i = 0; i <= 63; i++)
      {
           allobj->AColor[i] = allobj->AColor[126 - i] = allobj->AColor[126 + i] = allobj->AColor[253 - i]
                             = RGB(i * 4, 249, 255 - i * 4);
+          if (mode)
+          {
           allobj->BColor[i] = allobj->BColor[126 - i] = allobj->BColor[126 + i] = allobj->BColor[253 - i]
                             = RGB(191 + i, i * 4, 255 - i);
+          }
      }
-     for (int i = 0; i < 253; i++) printf("%x  ", allobj->BColor[i]);
 }
 
 // Calculate grid lines only one time, use every 16ms
@@ -99,7 +101,7 @@ void DrawGrid(HDC sdc, actors const *allobj)
      }
 }
 
-void DrawSnakes(HDC sdc, actors const *allobj)
+void DrawSnakes(HDC sdc, actors const *allobj, int mode)
 {
      int round = (allobj->ASnake[0].right - allobj->ASnake[0].left) / 4; // In order not to drag the scale, we calculate again
      for (int i = 0; i < allobj->ALen; i++)
@@ -109,6 +111,8 @@ void DrawSnakes(HDC sdc, actors const *allobj)
           RoundRect(sdc, allobj->ASnake[i].left, allobj->ASnake[i].top,
                     allobj->ASnake[i].right, allobj->ASnake[i].bottom, round, round);
      }
+     if (!mode) return;  // If single player
+
      for (int i = 0; i < allobj->BLen; i++)
      {
           SetDCPenColor(sdc, 0x00000080);
@@ -127,7 +131,7 @@ void DrawApple(HDC sdc, actors *allobj)
 }
 
 // Draw level and the game actors
-void ActorsShow(HDC dc, actors *allobj, fruit const *apple)
+void ActorsShow(HDC dc, actors *allobj, fruit const *apple, int mode)
 {
      HDC memDC = CreateCompatibleDC(dc);
      HBITMAP memBM = CreateCompatibleBitmap(dc, allobj->LewelWin.x, allobj->LewelWin.y);
@@ -140,7 +144,7 @@ void ActorsShow(HDC dc, actors *allobj, fruit const *apple)
 
      DrawGrid(memDC, allobj);
      DrawApple(memDC, allobj);
-     DrawSnakes(memDC, allobj);
+     DrawSnakes(memDC, allobj, mode);
 
      BitBlt(dc, 0, 0, allobj->LewelWin.x, allobj->LewelWin.y, memDC, 0, 0, SRCCOPY);
      DeleteDC(memDC);
@@ -148,11 +152,32 @@ void ActorsShow(HDC dc, actors *allobj, fruit const *apple)
 }
 
 // Drawing the score table(s)
-void ScoresShow(HDC dc, int coins, int win, HFONT font, RECT * const rt, int lang)
+void ScoresShow(HDC dc, snake *vyper, HFONT font, RECT * const rt, wchar_t *message, int mode)
 {
      wchar_t score[63];
-     _swprintf(score, lang ? L"\nОчков:\n\n%07i\n\nПобед:\n\n%i"
-                           : L"\nScore:\n\n%07i\n\nWins:\n\n%i", coins, win, *rt);
+     mode ?
+          _swprintf(score, message, vyper->coins, vyper->win, *rt) :
+          _swprintf(score, message, vyper->coins, vyper->maxscore, *rt) ;
+     HDC memDC = CreateCompatibleDC(dc);
+     HBITMAP memBM = CreateCompatibleBitmap(dc, rt->right, rt->bottom);
+     SelectObject(memDC, memBM);
+     SelectObject(memDC, GetStockObject(DC_BRUSH));
+     SetDCBrushColor(memDC, RGB(248, 248, 248));
+         Rectangle(memDC, rt->left, rt->top, rt->right, rt->bottom);
+
+     SelectObject(memDC, font);
+     SetBkColor(memDC, RGB(248, 248, 248));
+     DrawTextW(memDC, score, -1, rt, DT_CENTER); // Write text directly to the window
+
+     BitBlt(dc, rt->left, rt->top, rt->right, rt->bottom, memDC, 0, 0, SRCCOPY);
+     DeleteDC(memDC);
+     DeleteObject(memBM);
+}
+
+void SolutionShow(HDC dc, HFONT font, RECT * const rt, wchar_t *message)
+{
+     wchar_t score[254];
+     _swprintf(score, message, *rt);
      HDC memDC = CreateCompatibleDC(dc);
      HBITMAP memBM = CreateCompatibleBitmap(dc, rt->right, rt->bottom);
      SelectObject(memDC, memBM);

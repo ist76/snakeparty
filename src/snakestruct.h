@@ -8,6 +8,7 @@ typedef struct cpoint     // The logic of the game is calculated in "cells"
 typedef struct snake      // All snake data
 {
      int coins;           // Current score
+     int maxscore;        // Game bestscore
      cpoint vectr;        // Current direction of the snake
      cpoint newvectr;     // Player-entered direction
      int len;             // Current snake length (in segments)

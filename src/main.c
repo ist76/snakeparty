@@ -20,7 +20,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 {
      savedata gsets = ReadSavegame();                                        // Get previously saved data
      int GameTicks;                                                          // Latency (ms) between game loops
-     snake anaconda   = {.win = 0};                                          // First snake
+     snake anaconda   = {.win = 0, .maxscore = gsets.maxs};                  // First snake
      snake bushmaster = {.win = 0};                                          // Second snake
      actors AllActors;                                                       // For render level, look at winproc.h
             AllActors.LewelWin.x = gsets.gamemap.x * gsets.gamescale;        // Set game level size in px
@@ -29,7 +29,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
      SetRect(&ScoreTable, 0, 0, 7 * gsets.gamescale,
              (gsets.gamemap.x/3 - 1) * gsets.gamescale + gsets.gamescale/2);
      GetGrid(&AllActors, gsets.gamemap, gsets.gamescale);                    // Array of points to draw the frid
-     GetSnakeColors(&AllActors);
+     GetSnakeColors(&AllActors, gsets.gamemode);
      gamelang translate = ReadGamelang(gsets.lang);
      //WriteGameLang();
 
@@ -61,16 +61,22 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                                   ScoreTable.right, ScoreTable.bottom, hwnd, NULL, NULL, NULL);
 
      // Font for scoreboards
-     HFONT hFont = CreateFontW((gsets.gamemap.y * gsets.gamescale) / 20, 0, 0, 0, 500, FALSE, FALSE, FALSE, DEFAULT_CHARSET,
+     HFONT hFont = CreateFontW(AllActors.LewelWin.y / 20, 0, 0, 0, 500, FALSE, FALSE, FALSE, DEFAULT_CHARSET,
                                OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, PROOF_QUALITY, DEFAULT_PITCH | FF_SWISS, FALSE);
+
+     HFONT hFontS = CreateFontW(AllActors.LewelWin.y / 34, 0, 0, 0, 500, FALSE, FALSE, FALSE, DEFAULT_CHARSET,
+                               OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, PROOF_QUALITY, DEFAULT_PITCH | FF_SWISS, FALSE);
+
 
      // Make main menu
      HMENU MenuBar = CreateMenu();
           HMENU hPopMenu1 = CreatePopupMenu();
           HMENU hPopMenu2 = CreatePopupMenu();
+          HMENU hPopMenu3 = CreatePopupMenu();
 
           AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu1, translate.str1008);
           AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu2, translate.str1009);
+          AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu3, translate.str1110);
           AppendMenuW(MenuBar,   MF_STRING,                           1100, translate.str1100);
 
           AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == SMALLMAPX  ? MF_CHECKED : MF_UNCHECKED), 1001, translate.str1001);
@@ -78,32 +84,34 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
           AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == LARGEMAPX  ? MF_CHECKED : MF_UNCHECKED), 1003, translate.str1003);
           AppendMenuW(hPopMenu2, MF_STRING | (gsets.gamescale    == BIGSCALE   ? MF_CHECKED : MF_UNCHECKED), 1011, translate.str1011);
           AppendMenuW(hPopMenu2, MF_STRING | (gsets.gamescale    == HUGESCALE  ? MF_CHECKED : MF_UNCHECKED), 1012, translate.str1012);
+          AppendMenuW(hPopMenu3, MF_STRING | (!gsets.gamemode                  ? MF_CHECKED : MF_UNCHECKED), 1013, translate.str1013);
+          AppendMenuW(hPopMenu3, MF_STRING | (gsets.gamemode                   ? MF_CHECKED : MF_UNCHECKED), 1014, translate.str1014);
 
           SetMenu(hwnd, MenuBar);
           SetMenu(hwnd, hPopMenu1);
           SetMenu(hwnd, hPopMenu2);
      // End of creating GUI
 
-     srand(GetTickCount());                                                      // For generate Apple
-     fruit apple;                                                                // Make empty Apple struct
-     SnakeRestart(&gsets.gamemap, &anaconda, &bushmaster, &GameTicks, &apple);   // Game first initialization
-     DWORD next_game_tick = GetTickCount();                                      // Timer for game loop
-     DWORD next_render_tick = GetTickCount();                                    // Timer for render loop
-     MSG msg;                                                                    // Messages from app
-     HDC dc;                                                                     // Temporary context
+     srand(GetTickCount());                                                                      // For generate Apple
+     fruit apple;                                                                                // Make empty Apple struct
+     SnakeRestart(&gsets.gamemap, &anaconda, &bushmaster, &GameTicks, &apple, gsets.gamemode);   // Game first initialization
+     DWORD next_game_tick = GetTickCount();                                                      // Timer for game loop
+     DWORD next_render_tick = GetTickCount();                                                    // Timer for render loop
+     MSG msg;                                                                                    // Messages from app
+     HDC dc;                                                                                     // Temporary context
 
      for(;(anaconda.len < 253) || (bushmaster.len < 253);) // Main Game loop. Remember the snake.body[254]? We don't need to go beyond the array
      {
           if (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
           {
               // Processing keyboard commands
-              if (msg.message == WM_KEYDOWN) DispatchVector(msg.wParam, &anaconda.newvectr, &bushmaster.newvectr, &next_game_tick);
+              if (msg.message == WM_KEYDOWN) DispatchVector(msg.wParam, &anaconda.newvectr, &bushmaster.newvectr, &next_game_tick, gsets.gamemode);
 
               // When you select a menu item, the settings are overwritten and the application is restarted
               if (msg.message == WM_COMMAND)
               {
-                   DispatchMenu(msg.wParam, &gsets.gamemap, &gsets.gamescale, &gsets.lang);
-                   WriteSavegame(gsets.gamemap, gsets.gamescale, gsets.lang);
+                   DispatchMenu(msg.wParam, &gsets);
+                   WriteSavegame(&gsets, anaconda.maxscore);
                    RunAppCopy();  // Try restart the application. If unsuccessful, no problem, the settings are already saved
                    break;
               }
@@ -111,7 +119,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
               // Autosave on exit
               if (msg.message == WM_QUIT)
               {
-                   WriteSavegame(gsets.gamemap, gsets.gamescale, gsets.lang);
+                   WriteSavegame(&gsets, anaconda.maxscore);
                    break;
               }
               DispatchMessageW(&msg);
@@ -124,20 +132,29 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
               if (!SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &anaconda, &bushmaster) ||
                   !SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &bushmaster, &anaconda))
                   {
-                        SnakeRestart(&gsets.gamemap, &anaconda, &bushmaster, &GameTicks, &apple);
+                        SnakeRestart(&gsets.gamemap, &anaconda, &bushmaster, &GameTicks, &apple, gsets.gamemode);
                   }
 
               // We calculate the coordinates of all actors not every 16ms, but only ever GameTick
               SetApple(&AllActors, &apple, gsets.gamescale);
-              GetSnakesCells(&AllActors, &anaconda, &bushmaster, gsets.gamescale);
+              GetSnakesCells(&AllActors, &anaconda, &bushmaster, gsets.gamescale, gsets.gamemode);
 
               dc = GetDC(scores1);  // Draw scores 1
-              ScoresShow(dc, anaconda.coins, anaconda.win, hFont, &ScoreTable, gsets.lang);
+              ScoresShow(dc, &anaconda, hFont, &ScoreTable, gsets.gamemode ? translate.str1501 : translate.str1502, gsets.gamemode);
               ReleaseDC(scores1, dc);
 
-              dc = GetDC(scores2);  // Draw scores 2
-              ScoresShow(dc, bushmaster.coins, bushmaster.win, hFont, &ScoreTable, gsets.lang);
-              ReleaseDC(scores2, dc);
+              if (gsets.gamemode)
+              {
+                   dc = GetDC(scores2);  // Draw scores 2
+                   ScoresShow(dc, &bushmaster, hFont, &ScoreTable, translate.str1501, gsets.gamemode);
+                   ReleaseDC(scores2, dc);
+              }
+              else
+              {
+                   dc = GetDC(scores2);
+                   SolutionShow(dc, hFontS, &ScoreTable, translate.str1503);
+                   ReleaseDC(scores2, dc);
+              }
 
               next_game_tick += GameTicks;
           }
@@ -145,7 +162,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
           while(GetTickCount() > next_render_tick)
           {
               dc = GetDC(game_map);  // Draw level and actors
-              ActorsShow(dc, &AllActors, &apple);
+              ActorsShow(dc, &AllActors, &apple, gsets.gamemode);
               ReleaseDC(game_map, dc);
 
               next_render_tick += RENDERLAG;

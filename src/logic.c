@@ -27,7 +27,7 @@ fruit GetFruit(cpoint const *gamemap, snake *vyper, snake * wutu)
           int FruitWeight = rand();
     if (FruitWeight % 7 == 0)
           new.price = ColorGold;
-    else if (FruitWeight % 11 == 0)
+    else if (FruitWeight % 13 == 0)
           new.price = ColorBlack;
     else
           new.price = ColorRed;
@@ -35,7 +35,7 @@ fruit GetFruit(cpoint const *gamemap, snake *vyper, snake * wutu)
 }
 
 // Restarting the snakes and creating the apple
-void SnakeRestart(cpoint const *gamemap, snake *vyper, snake *wutu, int *ticks, fruit *apple)
+void SnakeRestart(cpoint const *gamemap, snake *vyper, snake *wutu, int *ticks, fruit *apple, int mode)
 {
      *ticks = 256;             // Base snake speed: ~4 cell/s
      vyper->vectr.x = 0;       // The snake stands still
@@ -43,8 +43,12 @@ void SnakeRestart(cpoint const *gamemap, snake *vyper, snake *wutu, int *ticks, 
      vyper->newvectr.x = 0;    // and is not going anywhere
      vyper->newvectr.y = 0;
      vyper->len = 1;
-     vyper->body[0].x = (gamemap->x / 3);
+     vyper->body[0].x = mode ? (gamemap->x / 3) : (gamemap->x / 2);
      vyper->body[0].y = (gamemap->y / 2);
+     if ((vyper->coins > vyper->maxscore) && !mode)
+     {
+          vyper->maxscore = vyper->coins;
+     }
      vyper->coins = 100;
 
      wutu->vectr.x = 0;
@@ -56,7 +60,7 @@ void SnakeRestart(cpoint const *gamemap, snake *vyper, snake *wutu, int *ticks, 
      wutu->body[0].y = (gamemap-> y / 2);
      wutu->coins = 100;
 
-     *apple = GetFruit(gamemap, vyper, wutu);  // Places the apple on the level
+     *apple = GetFruit(gamemap, vyper, wutu);  // Place the apple on the level
 }
 
 // Calculation direction of snake move

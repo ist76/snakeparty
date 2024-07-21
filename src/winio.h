@@ -17,6 +17,7 @@ typedef struct savedata
      int gamescale;   // Interface scale
      int gamemode;    // 0 - singleplayer 1 - COOP
      int lang;        // Interface language (only 0 or 1)
+     int maxs;        // Global game best score
 } savedata;
 
 typedef struct gamelang
@@ -39,8 +40,8 @@ typedef struct gamelang
 
 savedata ReadSavegame();
 gamelang ReadGamelang(int num);
-void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * next_tick);
-void DispatchMenu(WPARAM val, cpoint * map, int * scale, int * lang);
-void WriteSavegame(cpoint maps, int scale, int lang);
+void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * next_tick, int mode);
+void DispatchMenu(WPARAM val, savedata *gamesettings);
+void WriteSavegame(savedata const *gamesettings, int maxscore);
 void RunAppCopy(void);
 //void WriteGameLang(void);  // See winio.c
