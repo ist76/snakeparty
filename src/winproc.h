@@ -6,8 +6,10 @@ typedef struct actors
     RECT Grid[128];    // Max level size 65x65 cell
     RECT RApple;       // Apple px coord
     cpoint LewelWin;   // Level size in px
-    int alen;          // Anaconda len
-    int blen;          // Bushmaster len
-    int glen;          // Level grid array len
+    int ALen;          // Anaconda len
+    int BLen;          // Bushmaster len
+    int GLen;          // Level grid array len
+    int AColor[253];
+    int BColor[253];
     int AppleColor;    // Apple RGB color
 } actors;

@@ -29,6 +29,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
      SetRect(&ScoreTable, 0, 0, 7 * gsets.gamescale,
              (gsets.gamemap.x/3 - 1) * gsets.gamescale + gsets.gamescale/2);
      GetGrid(&AllActors, gsets.gamemap, gsets.gamescale);                    // Array of points to draw the frid
+     GetSnakeColors(&AllActors);
 
      // Very very stupid translate section!!!
      wchar_t str1008[13];
@@ -142,9 +143,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
               // We calculate the coordinates of all actors not every 16ms, but only ever GameTick
               GetSnakeCells(AllActors.ASnake, anaconda.body, anaconda.len, gsets.gamescale);
-              AllActors.alen = anaconda.len;
+              AllActors.ALen = anaconda.len;
               GetSnakeCells(AllActors.BSnake, bushmaster.body, bushmaster.len, gsets.gamescale);
-              AllActors.blen = bushmaster.len;
+              AllActors.BLen = bushmaster.len;
               SetApple(&AllActors, &apple, gsets.gamescale);
 
               dc = GetDC(scores1);  // Draw scores 1

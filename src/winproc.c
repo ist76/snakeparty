@@ -1,5 +1,5 @@
 // Functions for a windowed application
-// Responsible for drawing the level, leaderboards
+// Responsible for drawing the level, leaderboards, actors
 
 #include <stdio.h>
 #include <windows.h>
@@ -18,27 +18,39 @@ void GetSnakeCells(RECT *SnakeCells, cpoint const *body, int len, int scale)
      }
 }
 
+// Calculate Snake's cells color gradient (one time)
+void GetSnakeColors(actors *allobj)
+{
+     for (int i = 0; i <= 31; i++)
+     {
+          allobj->AColor[i] = allobj->AColor[126 - i] = allobj->AColor[126 + i] = allobj->AColor[253 - i]
+                            = RGB(i * 4, 249, 255 - i * 4);
+          allobj->BColor[i] = allobj->BColor[126 - i] = allobj->BColor[126 + i] = allobj->BColor[253 - i]
+                            = RGB(240, i * 4, 255 - i * 2);
+     }
+}
+
 // Calculate grid lines only one time, use every 16ms
-void GetGrid(actors *allobjs, cpoint map, int scale)
+void GetGrid(actors *allobj, cpoint map, int scale)
 {
      int counter = 0;
      for (int i = 0; i < map.x; i++)
      {
-          allobjs->Grid[counter].left   = (i+1) * scale;
-          allobjs->Grid[counter].top    = 1;
-          allobjs->Grid[counter].right  = (i+1) * scale;
-          allobjs->Grid[counter].bottom = map.y * scale - 1;
+          allobj->Grid[counter].left   = (i+1) * scale;
+          allobj->Grid[counter].top    = 1;
+          allobj->Grid[counter].right  = (i+1) * scale;
+          allobj->Grid[counter].bottom = map.y * scale - 1;
           counter++;
      }
      for (int i = 0; i < map.y; i++)
      {
-          allobjs->Grid[counter].left   = 1;
-          allobjs->Grid[counter].top    = (i+1) * scale;
-          allobjs->Grid[counter].right  = map.x * scale - 1;
-          allobjs->Grid[counter].bottom = (i+1) * scale;
+          allobj->Grid[counter].left   = 1;
+          allobj->Grid[counter].top    = (i+1) * scale;
+          allobj->Grid[counter].right  = map.x * scale - 1;
+          allobj->Grid[counter].bottom = (i+1) * scale;
           counter++;
      }
-     allobjs->glen = counter;
+     allobj->GLen = counter;
 }
 
 // Calculate apple coordinates & color
@@ -58,22 +70,19 @@ void SetApple(actors *allobj, fruit *apple, int scale)
           allobj->AppleColor = 0x000000FF;
           break;
      }
-     allobj->RApple.left   = apple->coord.x*scale + 2;
-     allobj->RApple.top    = apple->coord.y*scale + 2;
+     allobj->RApple.left   =  apple->coord.x*scale + 2;
+     allobj->RApple.top    =  apple->coord.y*scale + 2;
      allobj->RApple.right  = (apple->coord.x + 1) * scale - 2;
      allobj->RApple.bottom = (apple->coord.y + 1) * scale - 2;
 }
 
-void DrawSnake(HDC sdc, RECT const *body, int len, int num)
+void DrawSnake(HDC sdc, RECT const *body, int len, int *rectcolor)
 {
      SetDCBrushColor(sdc, RGB(0, 16, 255));
      int round = (body[0].right - body[0].left) / 4; // In order not to drag the scale, we calculate again
      for (int i = 0; i < len; i++)
      {
-          int rChan = !num ? ((i <= 63) ? i * 4 : 255 - (i-64) * 4): ((i <= 63) ? 255 - i * 4 : 3 + (i-64) * 4);
-          int gChan = !num ? (249) : ((i <= 63) ? i * 4 : 255 - (i-64) * 4);
-          int bChan = !num ? ((i <= 63) ? 255 - i * 4 : 3 + (i-64) * 4) : (249);   // set Snake's color gradient
-          SetDCBrushColor(sdc, RGB(rChan, gChan, bChan));
+          SetDCBrushColor(sdc, rectcolor[i]);
           RoundRect(sdc, body[i].left, body[i].top,
                     body[i].right, body[i].bottom, round, round);
      }
@@ -110,10 +119,10 @@ void ActorsShow(HDC dc, actors *allobj, fruit const *apple)
      SetDCBrushColor(memDC, RGB(248, 248, 224));
           Rectangle(memDC, 0, 0, allobj->LewelWin.x, allobj->LewelWin.y);
 
-     DrawGrid(memDC, allobj->Grid, allobj->glen);
+     DrawGrid(memDC, allobj->Grid, allobj->GLen);
      DrawApple(memDC, *allobj);
-     DrawSnake(memDC, allobj->ASnake, allobj->alen, 0);
-     DrawSnake(memDC, allobj->BSnake, allobj->blen, 1);
+     DrawSnake(memDC, allobj->ASnake, allobj->ALen, allobj->AColor);
+     DrawSnake(memDC, allobj->BSnake, allobj->BLen, allobj->BColor);
 
      BitBlt(dc, 0, 0, allobj->LewelWin.x, allobj->LewelWin.y, memDC, 0, 0, SRCCOPY);
      DeleteDC(memDC);
