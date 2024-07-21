@@ -129,8 +129,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
           while(GetTickCount() > next_game_tick)
           {
-              if (!SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &anaconda, &bushmaster) ||
-                  !SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &bushmaster, &anaconda))
+              if (!SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &anaconda, &bushmaster, gsets.gamemode) ||
+                  !SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &bushmaster, &anaconda, gsets.gamemode))
                   {
                         SnakeRestart(&gsets.gamemap, &anaconda, &bushmaster, &GameTicks, &apple, gsets.gamemode);
                   }

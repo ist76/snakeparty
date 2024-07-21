@@ -86,7 +86,7 @@ cpoint SetHead (cpoint neck, cpoint vect, cpoint border)
 }
 
 // The game logic
-int SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, snake * wutu)
+int SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, snake * wutu, int mode)
 {
      SetVectr(&vyper->vectr, &vyper->newvectr, &vyper->len);
      if (!(vyper->vectr.x) && !(vyper->vectr.y))
@@ -103,7 +103,14 @@ int SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, sn
      if (IfPointArray(&apple->coord, vyper) || ((head.x == apple->coord.x) && (head.y == apple->coord.y)))
      {
           vyper->coins = vyper->coins + 95 + 5*vyper->len * apple->price;
-          vyper->len = (apple->price != ColorBlack) ? vyper->len + 1 : (vyper->len / 3) + 1;
+          if (mode)
+          {
+               vyper->len = (apple->price != ColorBlack) ? vyper->len + 1 :(vyper->len / 3) + 1;
+          }
+          else
+          {
+               vyper->len = (apple->price != ColorBlack) ? vyper->len + 1 : vyper->len;
+          }
           *ticks = *ticks >=128 ? *ticks -1 : *ticks;  // Speed ​​up the game with every apple you eat
           *apple = GetFruit(gamemap, vyper, wutu);
      }
