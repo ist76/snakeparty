@@ -26,11 +26,20 @@ fruit GetFruit(cpoint const *gamemap, snake *vyper, snake * wutu)
     while ((IfPointArray(&new.coord, vyper)) && (IfPointArray(&new.coord, wutu)));
           int FruitWeight = rand();
     if (FruitWeight % 7 == 0)
+    {
           new.price = ColorGold;
+          new.ttl = 64;
+    }
     else if (FruitWeight % 13 == 0)
+    {
           new.price = ColorBlack;
+          new.ttl = 96;
+    }
     else
+    {
           new.price = ColorRed;
+          new.ttl = 128;
+    }
     return new;
 }
 
@@ -71,17 +80,17 @@ void SetVectr(cpoint *old, cpoint *new, int *len)
 }
 
 // Calculating head coordinates
-cpoint SetHead (cpoint neck, cpoint vect, cpoint border)
+cpoint SetHead (cpoint neck, cpoint vect, cpoint border, int mode)
 {
      cpoint newhead = {neck.x + vect.x, neck.y + vect.y};
      if (newhead.x == -1)
-         newhead.x += border.x;
+         (mode) ? newhead.x += border.x : newhead.x;
      if (newhead.x == border.x)
-         newhead.x -= border.x;
+         (mode) ? newhead.x -= border.x : newhead.x;
      if (newhead.y == -1)
-         newhead.y += border.y;
+         (mode) ? newhead.y += border.y : newhead.y;
      if (newhead.y == border.y)
-         newhead.y -= border.y;
+         (mode) ? newhead.y -= border.y : newhead.y;
      return newhead;
 }
 
@@ -92,11 +101,12 @@ int SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, sn
      if (!(vyper->vectr.x) && !(vyper->vectr.y))
           return -1;               // --> the snake stands still, skip
 
-     cpoint head = SetHead(vyper->body[0], vyper->vectr, *gamemap);
+     cpoint head = SetHead(vyper->body[0], vyper->vectr, *gamemap, mode);
      if (((vyper->len != 1) && IfPointArray(&head, vyper)) ||
-          (vyper->coins < 0))      // Don't bite yourself, and don't waste all coins else:
+           head.x >= gamemap->x || head.y >= gamemap->y ||
+           head.x < 0 || head.y < 0 || vyper->coins < 0)      // Don't bite yourself, and don't waste all coins else:
      {
-          wutu->win++;
+          if (mode) wutu->win++;
           return 0;                // --> restart round (Need run SnakeRestart() from main()!!! )
      }                             // if restart from here, the snakes switch places
 
@@ -111,7 +121,10 @@ int SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, sn
           {
                vyper->len = (apple->price != ColorBlack) ? vyper->len + 1 : vyper->len;
           }
-          *ticks = *ticks >=128 ? *ticks -1 : *ticks;  // Speed ​​up the game with every apple you eat
+
+          (mode) ? (*ticks = *ticks >=128 ? *ticks - 1 : *ticks) :  // If CooP
+                   (*ticks = *ticks >=128 ? *ticks - 2 :            // If Single and (> 128)
+                             *ticks  >= 16 ? *ticks - 1 : *ticks);  // (> 16) and (< 16)
           *apple = GetFruit(gamemap, vyper, wutu);
      }
 
@@ -121,5 +134,7 @@ int SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, sn
      }
      vyper->body[0] = head;        // insert head to body
      vyper->coins -= (vyper->len <= 64) ?  1 : 3;
+     apple->ttl = (mode) ?  apple->ttl - 1 : apple->ttl - 2;
+     if (apple->ttl == 0) *apple = GetFruit(gamemap, vyper, wutu);
      return 1;                     // --> normal exit
 }

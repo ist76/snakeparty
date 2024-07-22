@@ -27,4 +27,5 @@ typedef struct fruit
 {
      cpoint coord;
      int price;
+     int ttl;
 } fruit;

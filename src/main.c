@@ -43,7 +43,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
      RegisterClassW(&wcl);
 
-     HWND hwnd = CreateWindowW(L"mainwin", L"Snake Party", WS_OVERLAPPEDWINDOW&(~WS_MAXIMIZEBOX)&(~WS_THICKFRAME) | WS_VISIBLE,
+     HWND hwnd = CreateWindowW(L"mainwin", L"Snake Party", WS_OVERLAPPEDWINDOW & (~WS_MAXIMIZEBOX) & (~WS_THICKFRAME) | WS_VISIBLE,
                                10, 10, ((gsets.gamemap.x+9)*gsets.gamescale - gsets.gamescale/2),
                                (gsets.gamemap.y+3)*gsets.gamescale - gsets.gamescale/2, NULL, NULL, NULL, NULL);
 

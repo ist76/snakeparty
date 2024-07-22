@@ -3,7 +3,7 @@
 BIN = snake2
 
 # Flags
-CFLAGS += -Os -s -static -municode -mwindows -march=core2
+CFLAGS += -Os -s -static -municode -mwindows -march=core2 -Wall
 
 SRC =  src/main.c src/logic.c src/winproc.c src/winio.c app.res icon.res
 OBJ = $(SRC:.c=.o)
