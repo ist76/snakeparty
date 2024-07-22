@@ -5,7 +5,7 @@ _Snake game for one or two players. Written in C and WinAPI, compiled in the Min
 ![Snake Party](https://github.com/ist76/snakeparty/blob/main/Screenshot.PNG?raw=true)
 
 ## About
-Variation of the game "Snake" for one or two players. Development and expansion [Lonely Snake](https://github.com/ist76/lonelysnake).
+Variation of the game "Snake" for one or two players. Expansion of [Lonely Snake](https://github.com/ist76/lonelysnake).
 - Very small size (~25kb without icon) of the executable file
 - Simple and obvious (hopefully) source code
 - MSVS was not used either during writing or during assembly, the entire project can be assembled with one command in the console
