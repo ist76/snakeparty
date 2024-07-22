@@ -95,7 +95,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
      srand(GetTickCount());                                                                      // For generate Apple
      fruit apple;                                                                                // Make empty Apple struct
-     SnakeRestart(&gsets.gamemap, &anaconda, &bushmaster, &GameTicks, &apple, gsets.gamemode);   // Game first initialization
+     SnakeRestart(&gsets, &anaconda, &bushmaster, &GameTicks, &apple);   // Game first initialization
      DWORD next_game_tick = GetTickCount();                                                      // Timer for game loop
      DWORD next_render_tick = GetTickCount();                                                    // Timer for render loop
      MSG msg;                                                                                    // Messages from app
@@ -130,32 +130,38 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
           while(GetTickCount() > next_game_tick)
           {
-              if (!SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &anaconda, &bushmaster, gsets.gamemode) ||
-                  !SnakeLogic(&gsets.gamemap, &apple, &GameTicks, &bushmaster, &anaconda, gsets.gamemode))
-                  {
-                        SnakeRestart(&gsets.gamemap, &anaconda, &bushmaster, &GameTicks, &apple, gsets.gamemode);
-                  }
+              if (!gsets.gamemode)  // if singleplayer
+              {
+                    if (!SnakeLogic(&gsets, &apple, &GameTicks, &anaconda, &bushmaster))  // Snake suicide?
+                         {
+                          SnakeRestart(&gsets, &anaconda, &bushmaster, &GameTicks, &apple);
+                         }
+
+                    dc = GetDC(scores2);  // Draw solution in scores2 window
+                    SolutionShow(dc, hFontS, &ScoreTable, translate.str1503);
+                    ReleaseDC(scores2, dc);
+              }
+
+              else
+              {
+                    if (!SnakeLogic(&gsets, &apple, &GameTicks, &anaconda, &bushmaster) ||
+                        !SnakeLogic(&gsets, &apple, &GameTicks, &bushmaster, &anaconda))
+                        {
+                         SnakeRestart(&gsets, &anaconda, &bushmaster, &GameTicks, &apple);
+                        }
+
+                    dc = GetDC(scores2);  // Draw scores in scores 2 window
+                    ScoresShow(dc, &bushmaster, hFont, &ScoreTable, translate.str1501, gsets.gamemode);
+                    ReleaseDC(scores2, dc);
+              }
 
               // We calculate the coordinates of all actors not every 16ms, but only ever GameTick
               SetApple(&AllActors, &apple, gsets.gamescale);
               GetSnakesCells(&AllActors, &anaconda, &bushmaster, gsets.gamescale, gsets.gamemode);
 
-              dc = GetDC(scores1);  // Draw scores 1
+              dc = GetDC(scores1);  // Draw scores in scores 1 window
               ScoresShow(dc, &anaconda, hFont, &ScoreTable, gsets.gamemode ? translate.str1501 : translate.str1502, gsets.gamemode);
               ReleaseDC(scores1, dc);
-
-              if (gsets.gamemode)
-              {
-                   dc = GetDC(scores2);  // Draw scores 2
-                   ScoresShow(dc, &bushmaster, hFont, &ScoreTable, translate.str1501, gsets.gamemode);
-                   ReleaseDC(scores2, dc);
-              }
-              else
-              {
-                   dc = GetDC(scores2);
-                   SolutionShow(dc, hFontS, &ScoreTable, translate.str1503);
-                   ReleaseDC(scores2, dc);
-              }
 
               next_game_tick += GameTicks;
           }

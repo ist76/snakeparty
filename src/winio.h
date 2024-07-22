@@ -11,15 +11,6 @@
 #define HUGESCALE 38
 #define RENDERLAG 16  // Pause (ms) between game level redraw cycles
 
-typedef struct savedata
-{
-     cpoint gamemap;  // Level size in cells
-     int gamescale;   // Interface scale
-     int gamemode;    // 0 - singleplayer 1 - COOP
-     int lang;        // Interface language (only 0 or 1)
-     int maxs;        // Global game best score
-} savedata;
-
 typedef struct gamelang
 {
      wchar_t str1008[16];   // Map size

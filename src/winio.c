@@ -31,6 +31,7 @@ void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * ne
           break;
 
      case 0x25:               // Key LEFT (arrow)
+
           if (mode)
           {
                newvect2->x = -1;
@@ -41,10 +42,10 @@ void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * ne
                newvect1->x = -1;
                newvect1->y = 0;
           }
-
-          break;
+     break;
 
      case 0x27:               // Key RIGHT (arrow)
+
           if (mode)
           {
                newvect2->x = 1;
@@ -58,6 +59,7 @@ void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * ne
           break;
 
      case 0x26:               // Key UP (arrow)
+
           if (mode)
           {
                newvect2->x = 0;
@@ -71,6 +73,7 @@ void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * ne
           break;
 
      case 0x28:               // Key DOWN (arrow)
+
           if (mode)
           {
                newvect2->x = 0;
@@ -153,7 +156,7 @@ gamelang ReadGamelang(int num)
 {
      gamelang userlang = { .str1001 = L"Small",    .str1002 = L"Medium",        .str1003 = L"Large",
                            .str1008 = L"Map size", .str1009 = L"Scale",         .str1011 = L"Big",
-                           .str1012 = L"Huge",     .str1013 = L"Single Player", .str1014 = L"Coop",
+                           .str1012 = L"Huge",     .str1013 = L"One Player", .str1014 = L"Two Players",
                            .str1100 = L"Language", .str1110 = L"Game Mode",
                            .str1501 = L"\nScore:\n\n%07i\n\nWins:\n\n%i",
                            .str1502 = L"\nScore\n\n%07i\n\nMax Score\n\n%07i",
@@ -175,7 +178,7 @@ void WriteGameLang(void)
 {
      gamelang userlang = { .str1001 = L"Малый",        .str1002 = L"Средний",        .str1003 = L"Большой",
                            .str1008 = L"Размер карты", .str1009 = L"Масштаб",        .str1011 = L"Крупный",
-                           .str1012 = L"Огромный",     .str1013 = L"Одиночная игра", .str1014 = L"Кооператив",
+                           .str1012 = L"Огромный",     .str1013 = L"Один игрок",     .str1014 = L"Два игрока",
                            .str1100 = L"Язык",         .str1110 = L"Режим игры",
                            .str1501 = L"\nОчков:\n\n%07i\n\nПобед:\n\n%i",
                            .str1502 = L"\nОчков:\n\n%07i\n\nРекорд\n\n%07i",
