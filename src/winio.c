@@ -30,7 +30,7 @@ void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * ne
           newvect1->y = 1;
           break;
 
-     case 0x25:               // Key LEFT
+     case 0x25:               // Key LEFT (arrow)
           if (mode)
           {
                newvect2->x = -1;
@@ -44,7 +44,7 @@ void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * ne
 
           break;
 
-     case 0x27:               // Key RIGHT
+     case 0x27:               // Key RIGHT (arrow)
           if (mode)
           {
                newvect2->x = 1;
@@ -57,7 +57,7 @@ void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * ne
           }
           break;
 
-     case 0x26:               // Key UP
+     case 0x26:               // Key UP (arrow)
           if (mode)
           {
                newvect2->x = 0;
@@ -70,7 +70,7 @@ void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * ne
           }
           break;
 
-     case 0x28:               // Key DOWN
+     case 0x28:               // Key DOWN (arrow)
           if (mode)
           {
                newvect2->x = 0;
@@ -142,7 +142,7 @@ savedata ReadSavegame() // No comments..
      savedata usersave = { .gamemap = {.x = MEDIUMMAPX, .y = MEDIUMMAPY},
                            .gamescale = BIGSCALE, .lang = 0, .gamemode = 0,
                            .maxs = 0 };
-     HANDLE hFile = CreateFile(L"snake2.sav", GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+     HANDLE hFile = CreateFileW(L"snake2.sav", GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
      if (INVALID_HANDLE_VALUE == hFile) return usersave; // FIXME! Write check correctness later
      ReadFile(hFile, &usersave, sizeof(usersave), NULL, NULL);
      CloseHandle(hFile);
@@ -161,7 +161,7 @@ gamelang ReadGamelang(int num)
                          };
      if (num)
      {
-          HANDLE hFile = CreateFile(L"snake.lng", GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+          HANDLE hFile = CreateFileW(L"snake.lng", GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
           if (INVALID_HANDLE_VALUE == hFile) return userlang; // FIXME! Write check correctness later
           ReadFile(hFile, &userlang, sizeof(userlang), NULL, NULL);
           CloseHandle(hFile);
@@ -190,7 +190,7 @@ void WriteGameLang(void)
 
 void WriteSavegame(savedata const *gamesettings, int maxscore)
 {
-     HANDLE hFile = CreateFile(L"snake2.sav", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+     HANDLE hFile = CreateFileW(L"snake2.sav", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
      if (INVALID_HANDLE_VALUE == hFile) return;
      savedata usersave = { .gamemap = gamesettings->gamemap,
                            .gamescale = gamesettings->gamescale,
@@ -205,7 +205,7 @@ void RunAppCopy(void)
 {
      wchar_t path[256];
      GetModuleFileNameW(0, path, 256); // Get full name of snake.exe
-     STARTUPINFO si;  // Example of using CreateProcess from MSDN
+     STARTUPINFOW si;  // Example of using CreateProcess from MSDN
      PROCESS_INFORMATION pi;
      ZeroMemory( &si,sizeof(si));
      si.cb = sizeof(si);

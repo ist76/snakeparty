@@ -34,12 +34,12 @@ void GetSnakeColors(actors *allobj, int mode)
 {
      for (int i = 0; i <= 63; i++)
      {
-          allobj->AColor[i] = allobj->AColor[126 - i] = allobj->AColor[126 + i] = allobj->AColor[253 - i]
-                            = RGB(i * 4, 249, 255 - i * 4);
+          allobj->AColor[i] = allobj->AColor[126 - i] = allobj->AColor[126 + i] =
+                              allobj->AColor[253 - i] = RGB(i * 4, 249, 255 - i * 4);
           if (mode)
           {
-          allobj->BColor[i] = allobj->BColor[126 - i] = allobj->BColor[126 + i] = allobj->BColor[253 - i]
-                            = RGB(191 + i, i * 4, 255 - i);
+          allobj->BColor[i] = allobj->BColor[126 - i] = allobj->BColor[126 + i] =
+                              allobj->BColor[253 - i] = RGB(191 + i, i * 4, 255 - i);
           }
      }
 }
@@ -127,7 +127,8 @@ void DrawApple(HDC sdc, actors *allobj)
      SelectObject(sdc, GetStockObject(DC_BRUSH));
      SetDCPenColor(sdc, RGB(8, 16, 8));
      SetDCBrushColor(sdc, allobj->AppleColor);
-     Ellipse(sdc, allobj->RApple.left, allobj->RApple.top, allobj->RApple.right, allobj->RApple.bottom);
+     Ellipse(sdc, allobj->RApple.left, allobj->RApple.top,
+                  allobj->RApple.right, allobj->RApple.bottom);
 }
 
 // Draw level and the game actors
@@ -187,7 +188,7 @@ void SolutionShow(HDC dc, HFONT font, RECT * const rt, wchar_t *message)
 
      SelectObject(memDC, font);
      SetBkColor(memDC, RGB(248, 248, 248));
-     DrawTextW(memDC, score, -1, rt, DT_CENTER); // Write text directly to the window
+     DrawTextW(memDC, score, -1, rt, DT_CENTER);
 
      BitBlt(dc, rt->left, rt->top, rt->right, rt->bottom, memDC, 0, 0, SRCCOPY);
      DeleteDC(memDC);

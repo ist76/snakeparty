@@ -104,7 +104,7 @@ int SnakeLogic(cpoint const *gamemap, fruit *apple, int *ticks, snake *vyper, sn
      cpoint head = SetHead(vyper->body[0], vyper->vectr, *gamemap, mode);
      if (((vyper->len != 1) && IfPointArray(&head, vyper)) ||
            head.x >= gamemap->x || head.y >= gamemap->y ||
-           head.x < 0 || head.y < 0 || vyper->coins < 0)      // Don't bite yourself, and don't waste all coins else:
+           head.x < 0 || head.y < 0 || vyper->coins < 0)   // Don't bite yourself, and don't waste all coins else:
      {
           if (mode) wutu->win++;
           return 0;                // --> restart round (Need run SnakeRestart() from main()!!! )

@@ -13,7 +13,7 @@ typedef struct snake      // All snake data
      cpoint newvectr;     // Player-entered direction
      int len;             // Current snake length (in segments)
      int win;             // Wins counter
-     cpoint body[254];    // An array of segment coordinates (I hope 254 is enough for everyone)
+     cpoint body[254];    // An array of segment coordinates (I hope 254 is enough)
 } snake;
 
 enum FruitColor

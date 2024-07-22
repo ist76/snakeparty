@@ -33,7 +33,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
      gamelang translate = ReadGamelang(gsets.lang);
      //WriteGameLang();
 
-     // Create all GUI
+     /* Create all GUI */
      WNDCLASSW wcl;
          memset(&wcl, 0, sizeof(WNDCLASSW));
          wcl.lpszClassName = L"mainwin";
@@ -43,7 +43,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
      RegisterClassW(&wcl);
 
-     HWND hwnd = CreateWindowW(L"mainwin", L"Snake Party", WS_OVERLAPPEDWINDOW & (~WS_MAXIMIZEBOX) & (~WS_THICKFRAME) | WS_VISIBLE,
+     // For cl.exe use "Snake Party" not L"Snake Party"
+     HWND hwnd = CreateWindowW(L"mainwin", L"Snake Party", WS_OVERLAPPEDWINDOW&(~WS_MAXIMIZEBOX)&(~WS_THICKFRAME) | WS_VISIBLE,
                                10, 10, ((gsets.gamemap.x+9)*gsets.gamescale - gsets.gamescale/2),
                                (gsets.gamemap.y+3)*gsets.gamescale - gsets.gamescale/2, NULL, NULL, NULL, NULL);
 
@@ -52,8 +53,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
                                    gsets.gamescale/2, AllActors.LewelWin.x, AllActors.LewelWin.y, hwnd, NULL, NULL, NULL);
 
      // Make Scoreboard 1
-     HWND scores1 = CreateWindowW(L"static", NULL, SS_CENTER | WS_VISIBLE | WS_CHILD , (gsets.gamemap.x+1)*gsets.gamescale, gsets.gamescale/2,
-                                  ScoreTable.right, ScoreTable.bottom, hwnd, NULL, NULL, NULL);
+     HWND scores1 = CreateWindowW(L"static", NULL, SS_CENTER | WS_VISIBLE | WS_CHILD , (gsets.gamemap.x+1)*gsets.gamescale,
+                                  gsets.gamescale/2, ScoreTable.right, ScoreTable.bottom, hwnd, NULL, NULL, NULL);
 
      // Make Scoreboard 2
      HWND scores2 = CreateWindowW(L"static", NULL, SS_CENTER | WS_VISIBLE | WS_CHILD , (gsets.gamemap.x+1)*gsets.gamescale,
@@ -70,27 +71,27 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
      // Make main menu
      HMENU MenuBar = CreateMenu();
-          HMENU hPopMenu1 = CreatePopupMenu();
-          HMENU hPopMenu2 = CreatePopupMenu();
-          HMENU hPopMenu3 = CreatePopupMenu();
+     HMENU hPopMenu1 = CreatePopupMenu();
+     HMENU hPopMenu2 = CreatePopupMenu();
+     HMENU hPopMenu3 = CreatePopupMenu();
 
-          AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu1, translate.str1008);
-          AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu2, translate.str1009);
-          AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu3, translate.str1110);
-          AppendMenuW(MenuBar,   MF_STRING,                           1100, translate.str1100);
+     AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu1, translate.str1008);
+     AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu2, translate.str1009);
+     AppendMenuW(MenuBar,   MF_STRING | MF_POPUP, (UINT_PTR)hPopMenu3, translate.str1110);
+     AppendMenuW(MenuBar,   MF_STRING,                           1100, translate.str1100);
 
-          AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == SMALLMAPX  ? MF_CHECKED : MF_UNCHECKED), 1001, translate.str1001);
-          AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == MEDIUMMAPX ? MF_CHECKED : MF_UNCHECKED), 1002, translate.str1002);
-          AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == LARGEMAPX  ? MF_CHECKED : MF_UNCHECKED), 1003, translate.str1003);
-          AppendMenuW(hPopMenu2, MF_STRING | (gsets.gamescale    == BIGSCALE   ? MF_CHECKED : MF_UNCHECKED), 1011, translate.str1011);
-          AppendMenuW(hPopMenu2, MF_STRING | (gsets.gamescale    == HUGESCALE  ? MF_CHECKED : MF_UNCHECKED), 1012, translate.str1012);
-          AppendMenuW(hPopMenu3, MF_STRING | (!gsets.gamemode                  ? MF_CHECKED : MF_UNCHECKED), 1013, translate.str1013);
-          AppendMenuW(hPopMenu3, MF_STRING | (gsets.gamemode                   ? MF_CHECKED : MF_UNCHECKED), 1014, translate.str1014);
+     AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == SMALLMAPX  ? MF_CHECKED : MF_UNCHECKED), 1001, translate.str1001);
+     AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == MEDIUMMAPX ? MF_CHECKED : MF_UNCHECKED), 1002, translate.str1002);
+     AppendMenuW(hPopMenu1, MF_STRING | (gsets.gamemap.x    == LARGEMAPX  ? MF_CHECKED : MF_UNCHECKED), 1003, translate.str1003);
+     AppendMenuW(hPopMenu2, MF_STRING | (gsets.gamescale    == BIGSCALE   ? MF_CHECKED : MF_UNCHECKED), 1011, translate.str1011);
+     AppendMenuW(hPopMenu2, MF_STRING | (gsets.gamescale    == HUGESCALE  ? MF_CHECKED : MF_UNCHECKED), 1012, translate.str1012);
+     AppendMenuW(hPopMenu3, MF_STRING | (!gsets.gamemode                  ? MF_CHECKED : MF_UNCHECKED), 1013, translate.str1013);
+     AppendMenuW(hPopMenu3, MF_STRING | (gsets.gamemode                   ? MF_CHECKED : MF_UNCHECKED), 1014, translate.str1014);
 
-          SetMenu(hwnd, MenuBar);
-          SetMenu(hwnd, hPopMenu1);
-          SetMenu(hwnd, hPopMenu2);
-     // End of creating GUI
+     SetMenu(hwnd, MenuBar);
+     SetMenu(hwnd, hPopMenu1);
+     SetMenu(hwnd, hPopMenu2);
+     /* End of creating GUI */
 
      srand(GetTickCount());                                                                      // For generate Apple
      fruit apple;                                                                                // Make empty Apple struct
