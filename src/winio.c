@@ -1,5 +1,5 @@
-// Keyboard input, read and write settings, process menu commands,
-// and restart the application
+/* Keyboard input, read and write settings, process menu commands,
+   and restart the application */
 
 #include <windows.h>
 #include "snakestruct.h"
@@ -101,34 +101,34 @@ void DispatchMenu(WPARAM val, savedata *gamesettings)
      switch (val)
      {
      case 1001:
-          gamesettings->gamemap.x = SMALLMAPX;
-          gamesettings->gamemap.y = SMALLMAPY;
+          gamesettings->map.x = SMALLMAPX;
+          gamesettings->map.y = SMALLMAPY;
           break;
 
      case 1002:
-          gamesettings->gamemap.x = MEDIUMMAPX;
-          gamesettings->gamemap.y = MEDIUMMAPY;
+          gamesettings->map.x = MEDIUMMAPX;
+          gamesettings->map.y = MEDIUMMAPY;
           break;
 
      case 1003:
-          gamesettings->gamemap.x = LARGEMAPX;
-          gamesettings->gamemap.y = LARGEMAPY;
+          gamesettings->map.x = LARGEMAPX;
+          gamesettings->map.y = LARGEMAPY;
           break;
 
      case 1011:
-          gamesettings->gamescale = BIGSCALE;
+          gamesettings->scale = BIGSCALE;
           break;
 
      case 1012:
-          gamesettings->gamescale = HUGESCALE;
+          gamesettings->scale = HUGESCALE;
           break;
 
      case 1013:
-          gamesettings->gamemode = 0;
+          gamesettings->mode = 0;
           break;
 
      case 1014:
-          gamesettings->gamemode = 1;
+          gamesettings->mode = 1;
           break;
 
      case 1100:
@@ -142,8 +142,8 @@ void DispatchMenu(WPARAM val, savedata *gamesettings)
 
 savedata ReadSavegame() // No comments..
 {
-     savedata usersave = { .gamemap = {.x = MEDIUMMAPX, .y = MEDIUMMAPY},
-                           .gamescale = BIGSCALE, .lang = 0, .gamemode = 0,
+     savedata usersave = { .map = {.x = MEDIUMMAPX, .y = MEDIUMMAPY},
+                           .scale = BIGSCALE, .lang = 0, .mode = 0,
                            .maxs = 0 };
      HANDLE hFile = CreateFileW(L"snake2.sav", GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
      if (INVALID_HANDLE_VALUE == hFile) return usersave; // FIXME! Write check correctness later
@@ -172,32 +172,13 @@ gamelang ReadGamelang(int num)
      return userlang;
 }
 
-// Special function for make translation file
-/*
-void WriteGameLang(void)
-{
-     gamelang userlang = { .str1001 = L"Малый",        .str1002 = L"Средний",        .str1003 = L"Большой",
-                           .str1008 = L"Размер карты", .str1009 = L"Масштаб",        .str1011 = L"Крупный",
-                           .str1012 = L"Огромный",     .str1013 = L"Один игрок",     .str1014 = L"Два игрока",
-                           .str1100 = L"Язык",         .str1110 = L"Режим игры",
-                           .str1501 = L"\nОчков:\n\n%07i\n\nПобед:\n\n%i",
-                           .str1502 = L"\nОчков:\n\n%07i\n\nРекорд\n\n%07i",
-                           .str1503 = L"\nВыберите направление \nчтобы играть\n\nУправление: \nстрелки или\n«W S A D»\nна клавиатуре\n\nEscape - пауза\n\n\nИзменение любых\nнастроек требует\nперезапуска\n",
-                         };
-     HANDLE hFile = CreateFile(L"snake.lng", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-     if (INVALID_HANDLE_VALUE == hFile) return;
-     WriteFile(hFile, &userlang, sizeof(userlang), NULL, NULL);
-     CloseHandle(hFile);
-}
-*/
-
 void WriteSavegame(savedata const *gamesettings, int maxscore)
 {
      HANDLE hFile = CreateFileW(L"snake2.sav", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
      if (INVALID_HANDLE_VALUE == hFile) return;
-     savedata usersave = { .gamemap = gamesettings->gamemap,
-                           .gamescale = gamesettings->gamescale,
-                           .gamemode = gamesettings->gamemode,
+     savedata usersave = { .map = gamesettings->map,
+                           .scale = gamesettings->scale,
+                           .mode = gamesettings->mode,
                            .lang = gamesettings->lang, .maxs = maxscore
                          };
      WriteFile(hFile, &usersave, sizeof(usersave), NULL, NULL);

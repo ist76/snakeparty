@@ -1,94 +1,10 @@
-// Functions for a windowed application
-// Responsible for drawing the level, leaderboards, actors
+/* Functions for a windowed application
+   Responsible for drawing the level, leaderboards, actors */
 
 #include <stdio.h>
 #include <windows.h>
 #include "snakestruct.h"
 #include "winproc.h"
-
-// Calculate Snake's coords before rendering
-void GetSnakesCells(actors *allobj, snake const *vyper, snake const *wutu, int scale, int mode)
-{
-     allobj->ALen = vyper->len;
-     for (int i = 0; i < vyper->len; i++)
-     {
-          allobj->ASnake[i].left   =  vyper->body[i].x * scale;
-          allobj->ASnake[i].top    =  vyper->body[i].y * scale;
-          allobj->ASnake[i].right  = (vyper->body[i].x + 1) * scale;
-          allobj->ASnake[i].bottom = (vyper->body[i].y + 1) * scale;
-     }
-     if (!mode) return;  // Single Player
-
-     allobj->BLen = wutu->len;
-     for (int i = 0; i < wutu->len; i++)
-     {
-          allobj->BSnake[i].left   =  wutu->body[i].x * scale;
-          allobj->BSnake[i].top    =  wutu->body[i].y * scale;
-          allobj->BSnake[i].right  = (wutu->body[i].x + 1) * scale;
-          allobj->BSnake[i].bottom = (wutu->body[i].y + 1) * scale;
-     }
-}
-
-// Calculate Snake's cells color gradient (one time)
-void GetSnakeColors(actors *allobj, int mode)
-{
-     for (int i = 0; i <= 63; i++)
-     {
-          allobj->AColor[i] = allobj->AColor[126 - i] = allobj->AColor[126 + i] =
-                              allobj->AColor[253 - i] = RGB(i * 4, 249, 255 - i * 4);
-          if (mode)
-          {
-          allobj->BColor[i] = allobj->BColor[126 - i] = allobj->BColor[126 + i] =
-                              allobj->BColor[253 - i] = RGB(191 + i, i * 4, 255 - i);
-          }
-     }
-}
-
-// Calculate grid lines only one time, use every 16ms
-void GetGrid(actors *allobj, cpoint map, int scale)
-{
-     int counter = 0;
-     for (int i = 0; i < map.x; i++)
-     {
-          allobj->Grid[counter].left   = (i+1) * scale;
-          allobj->Grid[counter].top    = 1;
-          allobj->Grid[counter].right  = (i+1) * scale;
-          allobj->Grid[counter].bottom = map.y * scale - 1;
-          counter++;
-     }
-     for (int i = 0; i < map.y; i++)
-     {
-          allobj->Grid[counter].left   = 1;
-          allobj->Grid[counter].top    = (i+1) * scale;
-          allobj->Grid[counter].right  = map.x * scale - 1;
-          allobj->Grid[counter].bottom = (i+1) * scale;
-          counter++;
-     }
-     allobj->GLen = counter;
-}
-
-// Calculate apple coordinates & color
-void SetApple(actors *allobj, fruit *apple, int scale)
-{
-     switch (apple->price)
-     {
-     case ColorGold:
-          allobj->AppleColor = 0x000080FF;
-          break;
-
-     case ColorBlack:
-          allobj->AppleColor = 0x00080808;
-          break;
-
-     default:
-          allobj->AppleColor = 0x000000FF;
-          break;
-     }
-     allobj->RApple.left   =  apple->coord.x*scale + 2;
-     allobj->RApple.top    =  apple->coord.y*scale + 2;
-     allobj->RApple.right  = (apple->coord.x + 1) * scale - 2;
-     allobj->RApple.bottom = (apple->coord.y + 1) * scale - 2;
-}
 
 void DrawGrid(HDC sdc, actors const *allobj)
 {
@@ -132,22 +48,22 @@ void DrawApple(HDC sdc, actors *allobj)
 }
 
 // Draw level and the game actors
-void ActorsShow(HDC dc, actors *allobj, fruit const *apple, int mode)
+void ActorsShow(HDC dc, actors *allobj, int mode)
 {
      HDC memDC = CreateCompatibleDC(dc);
-     HBITMAP memBM = CreateCompatibleBitmap(dc, allobj->LewelWin.x, allobj->LewelWin.y);
+     HBITMAP memBM = CreateCompatibleBitmap(dc, allobj->LevelWin.x, allobj->LevelWin.y);
      SelectObject(memDC, memBM);
 
      // Draw background
      SelectObject(memDC, GetStockObject(DC_BRUSH));
      SetDCBrushColor(memDC, RGB(248, 248, 224));
-          Rectangle(memDC, 0, 0, allobj->LewelWin.x, allobj->LewelWin.y);
+          Rectangle(memDC, 0, 0, allobj->LevelWin.x, allobj->LevelWin.y);
 
      DrawGrid(memDC, allobj);
      DrawApple(memDC, allobj);
      DrawSnakes(memDC, allobj, mode);
 
-     BitBlt(dc, 0, 0, allobj->LewelWin.x, allobj->LewelWin.y, memDC, 0, 0, SRCCOPY);
+     BitBlt(dc, 0, 0, allobj->LevelWin.x, allobj->LevelWin.y, memDC, 0, 0, SRCCOPY);
      DeleteDC(memDC);
      DeleteObject(memBM);
 }

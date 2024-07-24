@@ -32,9 +32,9 @@ typedef struct fruit
 
 typedef struct savedata
 {
-     cpoint gamemap;  // Level size in cells
-     int gamescale;   // Interface scale
-     int gamemode;    // 0 - singleplayer 1 - COOP
-     int lang;        // Interface language (only 0 or 1)
-     int maxs;        // Global game best score
+     cpoint map;  // Level size in cells
+     int scale;   // Interface scale
+     int mode;    // 0 - singleplayer 1 - two players
+     int lang;    // Interface language (only 0 or 1)
+     int maxs;    // Global game best score
 } savedata;

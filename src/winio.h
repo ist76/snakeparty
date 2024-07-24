@@ -1,4 +1,4 @@
-// Savefile structure and function prototypes
+// Interface strings structure and some function prototypes
 
 // Constants for possible game level sizes and application scaling
 #define SMALLMAPX 24
@@ -35,4 +35,3 @@ void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * ne
 void DispatchMenu(WPARAM val, savedata *gamesettings);
 void WriteSavegame(savedata const *gamesettings, int maxscore);
 void RunAppCopy(void);
-//void WriteGameLang(void);  // See winio.c
