@@ -32,17 +32,17 @@ fruit GetFruit(cpoint const *map, snake *vyper, snake * wutu)
     if (FruitWeight % 7 == 0)
     {
           new.price = ColorGold;
-          new.ttl = (map->x + map->y + (vyper->len + wutu->len));
+          new.ttl = 2 * (map->x + map->y + (vyper->len + wutu->len));
     }
     else if (FruitWeight % 13 == 0)
     {
           new.price = ColorBlack;
-          new.ttl = (map->x + map->y + (vyper->len + wutu->len));
+          new.ttl = 2 * (map->x + map->y + (vyper->len + wutu->len));
     }
     else
     {
           new.price = ColorRed;
-          new.ttl = (map->x + map->y + 2 * (vyper->len + wutu->len));
+          new.ttl = 2 * (map->x + map->y + 2 * (vyper->len + wutu->len));
     }
     return new;
 }
@@ -109,6 +109,7 @@ int SnakeLogic(savedata const *game, fruit *apple, int *ticks, snake *vyper, sna
      {
           head.x = vyper->body[0].x + vyper->vectr.x;
           head.y = vyper->body[0].y + vyper->vectr.y;
+          apple->ttl -= 4;
 
           if (((vyper->len != 1) && IfPointArray(&head, vyper)) ||
            head.x >= game->map.x || head.y >= game->map.y ||
@@ -118,6 +119,7 @@ int SnakeLogic(savedata const *game, fruit *apple, int *ticks, snake *vyper, sna
      else
      {
           head = SetHeadS(vyper->body[0], vyper->vectr, game->map);
+          apple->ttl -= 3;
           if ((vyper->len != 1) && IfPointArray(&head, vyper))
           {
                wutu->win++;
@@ -150,7 +152,6 @@ int SnakeLogic(savedata const *game, fruit *apple, int *ticks, snake *vyper, sna
 
      vyper->body[0] = head;   // insert head to body
      vyper->coins -= (vyper->len <= 64) ?  1 : 3;
-     apple->ttl = (game->mode) ?  apple->ttl - 3 : apple->ttl - 2;
 
      if (apple->ttl <= 0)
           *apple = GetFruit(&game->map, vyper, wutu);
