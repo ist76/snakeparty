@@ -148,8 +148,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
      RegisterClassW(&wcl);
 
-     HWND hwnd = CreateWindowW(L"mainwin", L"Snake Party", WS_OVERLAPPEDWINDOW&(~WS_MAXIMIZEBOX)&(~WS_THICKFRAME)|WS_VISIBLE,
-                               10, 10, ((gsets.map.x+9)*gsets.scale - gsets.scale/2),
+     HWND hwnd = CreateWindowW(L"mainwin", L"Snake Party", 0x100A0000, 10, 10,
+                              ((gsets.map.x+9)*gsets.scale - gsets.scale/2),
                                (gsets.map.y+3)*gsets.scale - gsets.scale/2, NULL, NULL, NULL, NULL);
 
      // Separate window with game level
