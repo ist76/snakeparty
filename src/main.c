@@ -149,11 +149,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
      RegisterClassW(&wcl);
 
      HWND hwnd = CreateWindowW(L"mainwin", L"Snake Party", 0x100A0000, 10, 10,
-                              ((gsets.map.x+9)*gsets.scale - gsets.scale/2),
-                               (gsets.map.y+3)*gsets.scale - gsets.scale/2, NULL, NULL, NULL, NULL);
+                              (AllActors.LevelWin.x + ScoreTable.right + (3 * gsets.scale) / 2),
+                              (AllActors.LevelWin.y + (5 * gsets.scale) / 2 - 2), NULL, NULL, NULL, NULL);
 
      // Separate window with game level
-     HWND game_map = CreateWindowW(L"static", NULL, WS_VISIBLE | WS_CHILD , gsets.scale/2,
+     HWND game_map = CreateWindowW(L"static", NULL, WS_VISIBLE | WS_CHILD , gsets.scale/2 - 2,
                                    gsets.scale/2, AllActors.LevelWin.x, AllActors.LevelWin.y, hwnd, NULL, NULL, NULL);
 
      // Make Scoreboard 1
