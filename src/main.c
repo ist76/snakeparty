@@ -32,7 +32,7 @@ void WriteGameLang(void)
 */
 
 // Calculate Snake's coords before rendering
-void GetSnakesCells(actors *allobj, snake const *vyper, snake const *wutu, int scale, int mode)
+static void GetSnakesCells(actors *allobj, snake const *vyper, snake const *wutu, int scale, int mode)
 {
      allobj->ALen = vyper->len;
      for (int i = 0; i < vyper->len; i++)
@@ -47,15 +47,15 @@ void GetSnakesCells(actors *allobj, snake const *vyper, snake const *wutu, int s
      allobj->BLen = wutu->len;
      for (int i = 0; i < wutu->len; i++)
      {
-          allobj->BSnake[i].left   =  wutu->body[i].x * scale;
-          allobj->BSnake[i].top    =  wutu->body[i].y * scale;
-          allobj->BSnake[i].right  = (wutu->body[i].x + 1) * scale;
-          allobj->BSnake[i].bottom = (wutu->body[i].y + 1) * scale;
+          allobj->BSnake[i].left   =  wutu->body[i].x * scale + 1;
+          allobj->BSnake[i].top    =  wutu->body[i].y * scale + 1;
+          allobj->BSnake[i].right  = (wutu->body[i].x + 1) * scale + 1;
+          allobj->BSnake[i].bottom = (wutu->body[i].y + 1) * scale + 1;
      }
 }
 
 // Calculate Snake's cells color gradient (one time)
-void GetSnakeColors(actors *allobj, int mode)
+static void GetSnakeColors(actors *allobj, int mode)
 {
      for (int i = 0; i <= 63; i++)
      {
@@ -70,7 +70,7 @@ void GetSnakeColors(actors *allobj, int mode)
 }
 
 // Calculate grid lines only one time, use every 16ms
-void GetGrid(actors *allobj, cpoint map, int scale)
+static void GetGrid(actors *allobj, cpoint map, int scale)
 {
      int counter = 0;
      for (int i = 0; i < map.x; i++)
@@ -93,7 +93,7 @@ void GetGrid(actors *allobj, cpoint map, int scale)
 }
 
 // Calculate apple coordinates & color
-void SetApple(actors *allobj, fruit *apple, int scale)
+static void SetApple(actors *allobj, fruit *apple, int scale)
 {
      switch (apple->price)
      {
@@ -115,13 +115,13 @@ void SetApple(actors *allobj, fruit *apple, int scale)
      allobj->RApple.bottom = (apple->coord.y + 1) * scale - 2;
 }
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
+static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
      if (message == WM_DESTROY) PostQuitMessage(0);
      return DefWindowProc(hwnd, message, wparam, lparam);
 }
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ PWSTR pCmdLine, _In_ int nCmdShow)
 {
      savedata gsets = ReadSavegame();                                // Get previously saved data
      int GameTicks;                                                  // Latency (ms) between game loops
@@ -148,8 +148,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
      RegisterClassW(&wcl);
 
-     HWND hwnd = CreateWindowW(L"mainwin", L"Snake Party", 0x100A0000, 10, 10,
-                              (AllActors.LevelWin.x + ScoreTable.right + (3 * gsets.scale) / 2),
+     HWND hwnd = CreateWindowW(L"mainwin", L"Snake Party", 0x100A0000, 8, 8,
+                              (AllActors.LevelWin.x + ScoreTable.right + (3 * gsets.scale) / 2 + 2),
                               (AllActors.LevelWin.y + (5 * gsets.scale) / 2 - 2), NULL, NULL, NULL, NULL);
 
      // Separate window with game level
@@ -162,7 +162,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
      // Make Scoreboard 2
      HWND scores2 = CreateWindowW(L"static", NULL, SS_CENTER | WS_VISIBLE | WS_CHILD , (gsets.map.x+1)*gsets.scale,
-                                  ScoreTable.bottom + 1 * gsets.scale + gsets.scale/2,
+                                  ScoreTable.bottom + gsets.scale + gsets.scale/2,
                                   ScoreTable.right, ScoreTable.bottom, hwnd, NULL, NULL, NULL);
 
      // Font for scoreboards

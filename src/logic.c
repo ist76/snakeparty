@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "snakestruct.h"
 
-int IfPointArray(cpoint const *dot, snake *vyper)
+static int IfPointArray(cpoint const *dot, snake *vyper)
 {
      for (int i = vyper->len - 1; i >= 0; --i)
      {
@@ -16,7 +16,7 @@ int IfPointArray(cpoint const *dot, snake *vyper)
      return 0;
 }
 
-fruit GetFruit(cpoint const *map, snake *vyper, snake * wutu)
+static fruit GetFruit(cpoint const *map, snake *vyper, snake * wutu)
 {
     fruit new;
     do
@@ -42,7 +42,7 @@ fruit GetFruit(cpoint const *map, snake *vyper, snake * wutu)
     else
     {
           new.price = ColorRed;
-          new.ttl = 2 * (map->x + map->y + 3 * (vyper->len + wutu->len) / 2);
+          new.ttl = 3 * (map->x + map->y + (vyper->len + wutu->len) / 4);
     }
     return new;
 }
@@ -78,7 +78,7 @@ void SnakeRestart(savedata const *game, snake *vyper, snake *wutu, int *ticks, f
 }
 
 // Calculation direction of snake move
-void SetVectr(cpoint *old, cpoint *new, int *len)
+static void SetVectr(cpoint *old, cpoint *new, int *len)
 {
      if ((new->x != old->x *(-1)) || (new->y != old->y *(-1)) ||
          (*len == 1))
@@ -87,7 +87,7 @@ void SetVectr(cpoint *old, cpoint *new, int *len)
          }
 }
 
-cpoint SetHeadS(cpoint neck, cpoint vect, cpoint map)
+static cpoint SetHeadS(cpoint neck, cpoint vect, cpoint map)
 {
      cpoint newhead = {neck.x + vect.x, neck.y + vect.y};
      if (newhead.x == -1) newhead.x += map.x;

@@ -6,7 +6,7 @@
 #include "snakestruct.h"
 #include "winproc.h"
 
-void DrawGrid(HDC sdc, actors const *allobj)
+static void DrawGrid(HDC sdc, actors const *allobj)
 {
      SelectObject(sdc, GetStockObject(DC_PEN));
      SetDCPenColor(sdc, RGB(212, 224, 212));
@@ -17,7 +17,7 @@ void DrawGrid(HDC sdc, actors const *allobj)
      }
 }
 
-void DrawSnakes(HDC sdc, actors const *allobj, int mode)
+static void DrawSnakes(HDC sdc, actors const *allobj, int mode)
 {
      int round = (allobj->ASnake[0].right - allobj->ASnake[0].left) / 4; // In order not to drag the scale, we calculate again
      for (int i = 0; i < allobj->ALen; i++)
@@ -38,7 +38,7 @@ void DrawSnakes(HDC sdc, actors const *allobj, int mode)
      }
 }
 
-void DrawApple(HDC sdc, actors *allobj)
+static void DrawApple(HDC sdc, actors *allobj)
 {
      SelectObject(sdc, GetStockObject(DC_BRUSH));
      SetDCPenColor(sdc, RGB(8, 16, 8));
@@ -73,8 +73,8 @@ void ScoresShow(HDC dc, snake *vyper, HFONT font, RECT * const rt, wchar_t *mess
 {
      wchar_t score[63];
      mode ?
-          _swprintf(score, message, vyper->coins, vyper->win, *rt) :
-          _swprintf(score, message, vyper->coins, vyper->maxscore, *rt) ;
+          swprintf_s(score, 63, message, vyper->coins, vyper->win) :
+          swprintf_s(score, 63, message, vyper->coins, vyper->maxscore) ;
      HDC memDC = CreateCompatibleDC(dc);
      HBITMAP memBM = CreateCompatibleBitmap(dc, rt->right, rt->bottom);
      SelectObject(memDC, memBM);
@@ -93,8 +93,6 @@ void ScoresShow(HDC dc, snake *vyper, HFONT font, RECT * const rt, wchar_t *mess
 
 void SolutionShow(HDC dc, HFONT font, RECT * const rt, wchar_t *message)
 {
-     wchar_t score[254];
-     _swprintf(score, message, *rt);
      HDC memDC = CreateCompatibleDC(dc);
      HBITMAP memBM = CreateCompatibleBitmap(dc, rt->right, rt->bottom);
      SelectObject(memDC, memBM);
@@ -104,7 +102,7 @@ void SolutionShow(HDC dc, HFONT font, RECT * const rt, wchar_t *message)
 
      SelectObject(memDC, font);
      SetBkColor(memDC, RGB(248, 248, 248));
-     DrawTextW(memDC, score, -1, rt, DT_CENTER);
+     DrawTextW(memDC, message, -1, rt, DT_CENTER);
 
      BitBlt(dc, rt->left, rt->top, rt->right, rt->bottom, memDC, 0, 0, SRCCOPY);
      DeleteDC(memDC);
