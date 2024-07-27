@@ -18,33 +18,33 @@ static int IfPointArray(cpoint const *dot, snake *vyper)
 
 static fruit GetFruit(cpoint const *map, snake *vyper, snake * wutu)
 {
-    fruit new;
+    fruit newf;
     do
     {
-          new.coord.x = rand() % map->x;
-          new.coord.y = rand() % map->y;
+          newf.coord.x = rand() % map->x;
+          newf.coord.y = rand() % map->y;
     }
-    while (IfPointArray(&new.coord, vyper) ||
-           IfPointArray(&new.coord, wutu));
+    while (IfPointArray(&newf.coord, vyper) ||
+           IfPointArray(&newf.coord, wutu));
 
     int FruitWeight = rand();  // temporary for .price
 
     if (FruitWeight % 7 == 0)
     {
-          new.price = ColorGold;
-          new.ttl = 2 * (map->x + map->y + (vyper->len + wutu->len) / 2);
+          newf.price = ColorGold;
+          newf.ttl = 2 * (map->x + map->y + (vyper->len + wutu->len) / 2);
     }
     else if (FruitWeight % 13 == 0)
     {
-          new.price = ColorBlack;
-          new.ttl = 2 * (map->x + map->y + (vyper->len + wutu->len));
+          newf.price = ColorBlack;
+          newf.ttl = 2 * (map->x + map->y + (vyper->len + wutu->len));
     }
     else
     {
-          new.price = ColorRed;
-          new.ttl = 3 * (map->x + map->y + (vyper->len + wutu->len) / 4);
+          newf.price = ColorRed;
+          newf.ttl = 3 * (map->x + map->y + (vyper->len + wutu->len) / 4);
     }
-    return new;
+    return newf;
 }
 
 // Restarting the snakes and creating the apple
@@ -78,12 +78,12 @@ void SnakeRestart(savedata const *game, snake *vyper, snake *wutu, int *ticks, f
 }
 
 // Calculation direction of snake move
-static void SetVectr(cpoint *old, cpoint *new, int *len)
+static void SetVectr(cpoint *old, cpoint *newf, int *len)
 {
-     if ((new->x != old->x *(-1)) || (new->y != old->y *(-1)) ||
+     if ((newf->x != old->x *(-1)) || (newf->y != old->y *(-1)) ||
          (*len == 1))
          {
-               *old = *new;
+               *old = *newf;
          }
 }
 

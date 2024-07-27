@@ -12,9 +12,9 @@
 
 /* An example of a function that creates a file with a localized interface.
    Just write your lines in the appropriate positions and run the function
-   (See winio.h for details)
-
-void WriteGameLang(void)
+   (See winio.h for details) */
+/*
+static void WriteGameLang(void)
 {
      gamelang userlang = { .str1001 = L"Малый",        .str1002 = L"Средний",        .str1003 = L"Большой",
                            .str1008 = L"Размер карты", .str1009 = L"Масштаб",        .str1011 = L"Крупный",
@@ -63,8 +63,8 @@ static void GetSnakeColors(actors *allobj, int mode)
                               allobj->AColor[253 - i] = RGB(i * 4, 249, 255 - i * 4);
           if (mode)
           {
-          allobj->BColor[i] = allobj->BColor[126 - i] = allobj->BColor[126 + i] =
-                              allobj->BColor[253 - i] = RGB(191 + i, i * 4, 255 - i);
+               allobj->BColor[i] = allobj->BColor[126 - i] = allobj->BColor[126 + i] =
+                                   allobj->BColor[253 - i] = RGB(191 + i, i * 4, 255 - i);
           }
      }
 }
@@ -145,7 +145,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
          wcl.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
          wcl.style = CS_GLOBALCLASS;
          wcl.lpfnWndProc = WndProc;
-
      RegisterClassW(&wcl);
 
      HWND hwnd = CreateWindowW(L"mainwin", L"Snake Party", 0x100A0000, 8, 8,
@@ -183,7 +182,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
      AppendMenuW(MenuBar, MF_STRING | MF_POPUP, (UINT_PTR)hPMenu2, marks.str1009);
      AppendMenuW(MenuBar, MF_STRING | MF_POPUP, (UINT_PTR)hPMenu3, marks.str1110);
      AppendMenuW(MenuBar, MF_STRING,                         1100, marks.str1100);
-
      AppendMenuW(hPMenu1, MF_STRING | (gsets.map.x == SMALLMAPX  ? MF_CHECKED : MF_UNCHECKED), 1001, marks.str1001);
      AppendMenuW(hPMenu1, MF_STRING | (gsets.map.x == MEDIUMMAPX ? MF_CHECKED : MF_UNCHECKED), 1002, marks.str1002);
      AppendMenuW(hPMenu1, MF_STRING | (gsets.map.x == LARGEMAPX  ? MF_CHECKED : MF_UNCHECKED), 1003, marks.str1003);
@@ -241,7 +239,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
                          {
                           SnakeRestart(&gsets, &anaconda, &bushmaster, &GameTicks, &apple);
                          }
-
                     dc = GetDC(scores2);  // Draw solution in scores-2 window
                     SolutionShow(dc, hFontS, &ScoreTable, marks.str1503);
                     ReleaseDC(scores2, dc);
@@ -254,7 +251,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
                         {
                          SnakeRestart(&gsets, &anaconda, &bushmaster, &GameTicks, &apple);
                         }
-
                     dc = GetDC(scores2);  // Draw scores in scores-2 window
                     ScoresShow(dc, &bushmaster, hFont, &ScoreTable, marks.str1501, gsets.mode);
                     ReleaseDC(scores2, dc);
@@ -263,12 +259,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
               // We calculate the coordinates of all actors not every 16ms, but only ever GameTick
               SetApple(&AllActors, &apple, gsets.scale);
               GetSnakesCells(&AllActors, &anaconda, &bushmaster, gsets.scale, gsets.mode);
-
               dc = GetDC(scores1);  // Draw scores in scores-1 window
               ScoresShow(dc, &anaconda, hFont, &ScoreTable, gsets.mode ?
                          marks.str1501 : marks.str1502, gsets.mode);
               ReleaseDC(scores1, dc);
-
               next_game_tick += GameTicks;
           }
 
@@ -277,7 +271,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
               dc = GetDC(game_map);  // Draw level and actors
               ActorsShow(dc, &AllActors, gsets.mode);
               ReleaseDC(game_map, dc);
-
               next_render_tick += RENDERLAG;
           }
      }

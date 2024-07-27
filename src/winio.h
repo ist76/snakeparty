@@ -13,6 +13,9 @@
 
 typedef struct gamelang
 {
+     wchar_t str1503[254];  // Scoreboard Message3
+     wchar_t str1501[63];   // Scoreboard Message1
+     wchar_t str1502[63];   // Scoreboard Message2
      wchar_t str1008[16];   // Map size
      wchar_t str1009[16];   // Scale
      wchar_t str1110[16];   // Game Mode
@@ -24,9 +27,6 @@ typedef struct gamelang
      wchar_t str1012[16];   // Huge
      wchar_t str1013[16];   // Single Player
      wchar_t str1014[16];   // Coop
-     wchar_t str1501[63];   // Scoreboard Message1
-     wchar_t str1502[63];   // Scoreboard Message2
-     wchar_t str1503[254];  // Scoreboard Message3
 } gamelang;
 
 savedata ReadSavegame();

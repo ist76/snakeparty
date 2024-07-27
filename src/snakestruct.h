@@ -7,13 +7,13 @@ typedef struct cpoint     // The logic of the game is calculated in "cells"
 
 typedef struct snake      // All snake data
 {
-     int coins;           // Current score
-     int maxscore;        // Game bestscore
+     cpoint body[254];    // An array of segment coordinates (I hope 254 is enough)
      cpoint vectr;        // Current direction of the snake
      cpoint newvectr;     // Player-entered direction
+     int coins;           // Current score
+     int maxscore;        // Game bestscore
      int len;             // Current snake length (in segments)
      int win;             // Wins counter
-     cpoint body[254];    // An array of segment coordinates (I hope 254 is enough)
 } snake;
 
 enum FruitColor
