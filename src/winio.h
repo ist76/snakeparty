@@ -30,8 +30,8 @@ typedef struct gamelang
 } gamelang;
 
 savedata ReadSavegame();
-gamelang ReadGamelang(int num);
-void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * next_tick, int mode);
+gamelang ReadGamelang(unsigned char num);
+void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * next_tick, unsigned char mode);
 void DispatchMenu(WPARAM val, savedata *gamesettings);
 void WriteSavegame(savedata const *gamesettings, int maxscore);
 void RunAppCopy(void);

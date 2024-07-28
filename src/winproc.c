@@ -6,21 +6,21 @@
 #include "snakestruct.h"
 #include "winproc.h"
 
-static void DrawGrid(HDC sdc, actors const *allobj)
+static inline void DrawGrid(HDC sdc, actors const *allobj)
 {
      SelectObject(sdc, GetStockObject(DC_PEN));
      SetDCPenColor(sdc, RGB(212, 224, 212));
-     for (int i = 0; i < allobj->GLen; i++)
+     for (size_t i = 0; i < allobj->GLen; i++)
      {
           MoveToEx(sdc, allobj->Grid[i].left, allobj->Grid[i].top, NULL);
           LineTo  (sdc, allobj->Grid[i].right, allobj->Grid[i].bottom);
      }
 }
 
-static void DrawSnakes(HDC sdc, actors const *allobj, int mode)
+static inline void DrawSnakes(HDC sdc, actors const *allobj, unsigned char mode)
 {
-     int round = (allobj->ASnake[0].right - allobj->ASnake[0].left) / 4; // In order not to drag the scale, we calculate again
-     for (int i = 0; i < allobj->ALen; i++)
+     size_t round = (allobj->ASnake[0].right - allobj->ASnake[0].left) / 4; // In order not to drag the scale, we calculate again
+     for (size_t i = 0; i < allobj->ALen; i++)
      {
           SetDCPenColor(sdc, 0x00008000);
           SetDCBrushColor(sdc, allobj->AColor[i]);
@@ -29,7 +29,7 @@ static void DrawSnakes(HDC sdc, actors const *allobj, int mode)
      }
      if (!mode) return;  // If single player
 
-     for (int i = 0; i < allobj->BLen; i++)
+     for (size_t i = 0; i < allobj->BLen; i++)
      {
           SetDCPenColor(sdc, 0x00000080);
           SetDCBrushColor(sdc, allobj->BColor[i]);
@@ -38,7 +38,7 @@ static void DrawSnakes(HDC sdc, actors const *allobj, int mode)
      }
 }
 
-static void DrawApple(HDC sdc, actors *allobj)
+static inline void DrawApple(HDC sdc, actors *allobj)
 {
      SelectObject(sdc, GetStockObject(DC_BRUSH));
      SetDCPenColor(sdc, RGB(8, 16, 8));
@@ -48,7 +48,7 @@ static void DrawApple(HDC sdc, actors *allobj)
 }
 
 // Draw level and the game actors
-void ActorsShow(HDC dc, actors *allobj, int mode)
+void ActorsShow(HDC dc, actors *allobj, unsigned char mode)
 {
      HDC memDC = CreateCompatibleDC(dc);
      HBITMAP memBM = CreateCompatibleBitmap(dc, allobj->LevelWin.x, allobj->LevelWin.y);
@@ -69,7 +69,7 @@ void ActorsShow(HDC dc, actors *allobj, int mode)
 }
 
 // Drawing the score table(s)
-void ScoresShow(HDC dc, snake *vyper, HFONT font, RECT * const rt, wchar_t *message, int mode)
+void ScoresShow(HDC dc, snake *vyper, HFONT font, RECT * const rt, wchar_t *message, unsigned char mode)
 {
      wchar_t score[63];
      mode ?

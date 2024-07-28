@@ -6,7 +6,7 @@
 #include "winio.h"
 
 // Converts keystrokes into movement direction (in game logic format)
-void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * next_tick, int mode)
+void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * next_tick, unsigned char mode)
 {
      switch (key)
      {
@@ -152,7 +152,7 @@ savedata ReadSavegame() // No comments..
      return usersave;
 }
 
-gamelang ReadGamelang(int num)
+gamelang ReadGamelang(unsigned char num)
 {
      gamelang userlang = { .str1001 = L"Small",    .str1002 = L"Medium",        .str1003 = L"Large",
                            .str1008 = L"Map size", .str1009 = L"Scale",         .str1011 = L"Big",

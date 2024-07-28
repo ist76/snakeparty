@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include "snakestruct.h"
 
-static int IfPointArray(cpoint const *dot, snake *vyper)
+static size_t IfPointArray(cpoint const *dot, snake *vyper)
 {
-     for (int i = vyper->len - 1; i >= 0; --i)
+     for (size_t i = 0; i < vyper->len; i++)
      {
           if (dot->x == vyper->body[i].x &&
               dot->y == vyper->body[i].y) return 1;
@@ -78,7 +78,7 @@ void SnakeRestart(savedata const *game, snake *vyper, snake *wutu, int *ticks, f
 }
 
 // Calculation direction of snake move
-static void SetVectr(cpoint *old, cpoint *newf, int *len)
+static inline void SetVectr(cpoint *old, cpoint *newf, size_t *len)
 {
      if ((newf->x != old->x *(-1)) || (newf->y != old->y *(-1)) ||
          (*len == 1))
@@ -87,7 +87,7 @@ static void SetVectr(cpoint *old, cpoint *newf, int *len)
          }
 }
 
-static cpoint SetHeadS(cpoint neck, cpoint vect, cpoint map)
+static inline cpoint SetHeadS(cpoint neck, cpoint vect, cpoint map)
 {
      cpoint newhead = {neck.x + vect.x, neck.y + vect.y};
      if (newhead.x == -1) newhead.x += map.x;
@@ -145,7 +145,7 @@ int SnakeLogic(savedata const *game, fruit *apple, int *ticks, snake *vyper, sna
           }
      }
 
-     for (int i = vyper->len; i > 0; --i)
+     for (size_t i = vyper->len; i > 0; --i)
      {
           vyper->body[i] = vyper->body[i-1];
      }

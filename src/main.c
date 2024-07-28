@@ -32,10 +32,10 @@ static void WriteGameLang(void)
 */
 
 // Calculate Snake's coords before rendering
-static void GetSnakesCells(actors *allobj, snake const *vyper, snake const *wutu, int scale, int mode)
+static inline void GetSnakesCells(actors *allobj, snake const *vyper, snake const *wutu, size_t scale, size_t mode)
 {
      allobj->ALen = vyper->len;
-     for (int i = 0; i < vyper->len; i++)
+     for (size_t i = 0; i < vyper->len; i++)
      {
           allobj->ASnake[i].left   =  vyper->body[i].x * scale;
           allobj->ASnake[i].top    =  vyper->body[i].y * scale;
@@ -45,7 +45,7 @@ static void GetSnakesCells(actors *allobj, snake const *vyper, snake const *wutu
      if (!mode) return;  // Single Player
 
      allobj->BLen = wutu->len;
-     for (int i = 0; i < wutu->len; i++)
+     for (size_t i = 0; i < wutu->len; i++)
      {
           allobj->BSnake[i].left   =  wutu->body[i].x * scale + 1;
           allobj->BSnake[i].top    =  wutu->body[i].y * scale + 1;
@@ -55,9 +55,9 @@ static void GetSnakesCells(actors *allobj, snake const *vyper, snake const *wutu
 }
 
 // Calculate Snake's cells color gradient (one time)
-static void GetSnakeColors(actors *allobj, int mode)
+static void GetSnakeColors(actors *allobj, unsigned char mode)
 {
-     for (int i = 0; i <= 63; i++)
+     for (size_t i = 0; i <= 63; i++)
      {
           allobj->AColor[i] = allobj->AColor[126 - i] = allobj->AColor[126 + i] =
                               allobj->AColor[253 - i] = RGB(i * 4, 249, 255 - i * 4);
@@ -70,10 +70,10 @@ static void GetSnakeColors(actors *allobj, int mode)
 }
 
 // Calculate grid lines only one time, use every 16ms
-static void GetGrid(actors *allobj, cpoint map, int scale)
+static void GetGrid(actors *allobj, cpoint map, size_t scale)
 {
      int counter = 0;
-     for (int i = 0; i < map.x; i++)
+     for (size_t i = 0; i < map.x; i++)
      {
           allobj->Grid[counter].left   = (i+1) * scale;
           allobj->Grid[counter].top    = 1;
@@ -81,7 +81,7 @@ static void GetGrid(actors *allobj, cpoint map, int scale)
           allobj->Grid[counter].bottom = map.y * scale - 1;
           counter++;
      }
-     for (int i = 0; i < map.y; i++)
+     for (size_t i = 0; i < map.y; i++)
      {
           allobj->Grid[counter].left   = 1;
           allobj->Grid[counter].top    = (i+1) * scale;
@@ -93,7 +93,7 @@ static void GetGrid(actors *allobj, cpoint map, int scale)
 }
 
 // Calculate apple coordinates & color
-static void SetApple(actors *allobj, fruit *apple, int scale)
+static inline void SetApple(actors *allobj, fruit *apple, size_t scale)
 {
      switch (apple->price)
      {
@@ -123,17 +123,17 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM l
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ PWSTR pCmdLine, _In_ int nCmdShow)
 {
-     savedata gsets = ReadSavegame();                                // Get previously saved data
-     int GameTicks;                                                  // Latency (ms) between game loops
-     snake anaconda   = {.win = 0, .maxscore = gsets.maxs};          // First snake
-     snake bushmaster = {.win = 0};                                  // Second snake
-     actors AllActors;                                               // For render level, look at winproc.h
-            AllActors.LevelWin.x = gsets.map.x * gsets.scale;        // Set game level size in px
+     savedata gsets = ReadSavegame();                             // Get previously saved data
+     int GameTicks;                                               // Latency (ms) between game loops
+     snake anaconda   = {.win = 0, .maxscore = gsets.maxs};       // First snake
+     snake bushmaster = {.win = 0};                               // Second snake
+     actors AllActors;                                            // For render level, look at winproc.h
+            AllActors.LevelWin.x = gsets.map.x * gsets.scale;     // Set game level size in px
             AllActors.LevelWin.y = gsets.map.y * gsets.scale;
-     RECT ScoreTable;                                                // Size of score table
+     RECT ScoreTable;                                             // Size of score table
      SetRect(&ScoreTable, 0, 0, 7 * gsets.scale,
              (gsets.map.x/3 - 1) * gsets.scale + gsets.scale/2);
-     GetGrid(&AllActors, gsets.map, gsets.scale);                    // Array of points to draw the frid
+     GetGrid(&AllActors, gsets.map, gsets.scale);                 // Array of points to draw the frid
      GetSnakeColors(&AllActors, gsets.mode);
      gamelang marks = ReadGamelang(gsets.lang);
      // WriteGameLang();  //  This function call generate snake.lng file, if you need to create custom translate
