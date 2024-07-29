@@ -10,7 +10,7 @@ static inline void DrawGrid(HDC sdc, actors const *allobj)
 {
      SelectObject(sdc, GetStockObject(DC_PEN));
      SetDCPenColor(sdc, RGB(212, 224, 212));
-     for (size_t i = 0; i < allobj->GLen; i++)
+     for (int i = 0; i < allobj->GLen; i++)
      {
           MoveToEx(sdc, allobj->Grid[i].left, allobj->Grid[i].top, NULL);
           LineTo  (sdc, allobj->Grid[i].right, allobj->Grid[i].bottom);
@@ -19,8 +19,8 @@ static inline void DrawGrid(HDC sdc, actors const *allobj)
 
 static inline void DrawSnakes(HDC sdc, actors const *allobj, unsigned char mode)
 {
-     size_t round = (allobj->ASnake[0].right - allobj->ASnake[0].left) / 4; // In order not to drag the scale, we calculate again
-     for (size_t i = 0; i < allobj->ALen; i++)
+     int round = (allobj->ASnake[0].right - allobj->ASnake[0].left) / 4; // In order not to drag the scale, we calculate again
+     for (short i = 0; i < allobj->ALen; i++)
      {
           SetDCPenColor(sdc, 0x00008000);
           SetDCBrushColor(sdc, allobj->AColor[i]);
@@ -29,7 +29,7 @@ static inline void DrawSnakes(HDC sdc, actors const *allobj, unsigned char mode)
      }
      if (!mode) return;  // If single player
 
-     for (size_t i = 0; i < allobj->BLen; i++)
+     for (short i = 0; i < allobj->BLen; i++)
      {
           SetDCPenColor(sdc, 0x00000080);
           SetDCBrushColor(sdc, allobj->BColor[i]);

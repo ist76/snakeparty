@@ -140,7 +140,7 @@ void DispatchMenu(WPARAM val, savedata *gamesettings)
      }
 }
 
-savedata ReadSavegame() // No comments..
+savedata ReadSavegame(void) // No comments..
 {
      savedata usersave = { .map = {.x = MEDIUMMAPX, .y = MEDIUMMAPY},
                            .scale = BIGSCALE, .lang = 0, .mode = 0,

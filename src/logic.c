@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include "snakestruct.h"
 
-static size_t IfPointArray(cpoint const *dot, snake *vyper)
+static int IfPointArray(cpoint const *dot, snake *vyper)
 {
-     for (size_t i = 0; i < vyper->len; i++)
+     for (short i = vyper->len - 1; i >= 0; --i)
      {
           if (dot->x == vyper->body[i].x &&
               dot->y == vyper->body[i].y) return 1;
@@ -50,7 +50,7 @@ static fruit GetFruit(cpoint const *map, snake *vyper, snake * wutu)
 // Restarting the snakes and creating the apple
 void SnakeRestart(savedata const *game, snake *vyper, snake *wutu, int *ticks, fruit *apple)
 {
-     *ticks = 256;             // Base snake speed: ~4 cell/s
+     *ticks = DEFTICKS;        // Base snake speed: ~4 cell/s if 256
      vyper->vectr.x = 0;       // The snake stands still
      vyper->vectr.y = 0;
      vyper->newvectr.x = 0;    // and is not going anywhere
@@ -63,7 +63,7 @@ void SnakeRestart(savedata const *game, snake *vyper, snake *wutu, int *ticks, f
      {
           vyper->maxscore = vyper->coins;
      }
-     vyper->coins = 100;
+     vyper->coins = DEFCOINS;
 
      wutu->vectr.x = 0;
      wutu->vectr.y = 0;
@@ -72,13 +72,13 @@ void SnakeRestart(savedata const *game, snake *vyper, snake *wutu, int *ticks, f
      wutu->len = 1;
      wutu->body[0].x = game->mode ? (game->map.x * 2/ 3) : -1;
      wutu->body[0].y = (game->map.y / 2);
-     wutu->coins = 100;
+     wutu->coins = DEFCOINS;
 
      *apple = GetFruit(&game->map, vyper, wutu);  // Place the apple on the level
 }
 
 // Calculation direction of snake move
-static inline void SetVectr(cpoint *old, cpoint *newf, size_t *len)
+static inline void SetVectr(cpoint *old, cpoint *newf, short *len)
 {
      if ((newf->x != old->x *(-1)) || (newf->y != old->y *(-1)) ||
          (*len == 1))
@@ -145,7 +145,7 @@ int SnakeLogic(savedata const *game, fruit *apple, int *ticks, snake *vyper, sna
           }
      }
 
-     for (size_t i = vyper->len; i > 0; --i)
+     for (short i = vyper->len; i > 0; --i)
      {
           vyper->body[i] = vyper->body[i-1];
      }

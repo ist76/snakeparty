@@ -13,9 +13,9 @@
 
 typedef struct gamelang
 {
-     wchar_t str1503[254];  // Scoreboard Message3
-     wchar_t str1501[63];   // Scoreboard Message1
-     wchar_t str1502[63];   // Scoreboard Message2
+     wchar_t str1503[192];  // Scoreboard Message3
+     wchar_t str1501[40];   // Scoreboard Message1
+     wchar_t str1502[40];   // Scoreboard Message2
      wchar_t str1008[16];   // Map size
      wchar_t str1009[16];   // Scale
      wchar_t str1110[16];   // Game Mode
@@ -29,7 +29,7 @@ typedef struct gamelang
      wchar_t str1014[16];   // Coop
 } gamelang;
 
-savedata ReadSavegame();
+savedata ReadSavegame(void);
 gamelang ReadGamelang(unsigned char num);
 void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * next_tick, unsigned char mode);
 void DispatchMenu(WPARAM val, savedata *gamesettings);
