@@ -6,7 +6,7 @@
 #include "snakestruct.h"
 #include "winproc.h"
 
-static inline void DrawGrid(HDC sdc, actors const *allobj)
+static inline void DrawGrid(HDC sdc, Actors const *allobj)
 {
      SelectObject(sdc, GetStockObject(DC_PEN));
      SetDCPenColor(sdc, RGB(212, 224, 212));
@@ -17,7 +17,7 @@ static inline void DrawGrid(HDC sdc, actors const *allobj)
      }
 }
 
-static inline void DrawSnakes(HDC sdc, actors const *allobj, unsigned char mode)
+static inline void DrawSnakes(HDC sdc, Actors const *allobj, unsigned char mode)
 {
      int round = (allobj->ASnake[0].right - allobj->ASnake[0].left) / 4; // In order not to drag the scale, we calculate again
      for (short i = 0; i < allobj->ALen; i++)
@@ -38,7 +38,7 @@ static inline void DrawSnakes(HDC sdc, actors const *allobj, unsigned char mode)
      }
 }
 
-static inline void DrawApple(HDC sdc, actors *allobj)
+static inline void DrawApple(HDC sdc, Actors *allobj)
 {
      SelectObject(sdc, GetStockObject(DC_BRUSH));
      SetDCPenColor(sdc, RGB(8, 16, 8));
@@ -47,8 +47,8 @@ static inline void DrawApple(HDC sdc, actors *allobj)
                   allobj->RApple.right, allobj->RApple.bottom);
 }
 
-// Draw level and the game actors
-void ActorsShow(HDC dc, actors *allobj, unsigned char mode)
+// Draw level and the game Actors
+void ActorsShow(HDC dc, Actors *allobj, unsigned char mode)
 {
      HDC memDC = CreateCompatibleDC(dc);
      HBITMAP memBM = CreateCompatibleBitmap(dc, allobj->LevelWin.x, allobj->LevelWin.y);
@@ -59,22 +59,22 @@ void ActorsShow(HDC dc, actors *allobj, unsigned char mode)
      SetDCBrushColor(memDC, RGB(248, 248, 224));
           Rectangle(memDC, 0, 0, allobj->LevelWin.x, allobj->LevelWin.y);
 
-     DrawGrid(memDC, allobj);
-     DrawApple(memDC, allobj);
-     DrawSnakes(memDC, allobj, mode);
+     DrawGrid   (memDC, allobj);
+     DrawApple  (memDC, allobj);
+     DrawSnakes (memDC, allobj, mode);
 
-     BitBlt(dc, 0, 0, allobj->LevelWin.x, allobj->LevelWin.y, memDC, 0, 0, SRCCOPY);
-     DeleteDC(memDC);
-     DeleteObject(memBM);
+     BitBlt       (dc, 0, 0, allobj->LevelWin.x, allobj->LevelWin.y, memDC, 0, 0, SRCCOPY);
+     DeleteDC     (memDC);
+     DeleteObject (memBM);
 }
 
 // Drawing the score table(s)
-void ScoresShow(HDC dc, snake *vyper, HFONT font, RECT * const rt, wchar_t *message, unsigned char mode)
+void ScoresShow(HDC dc, Snake *vyper, HFONT font, RECT * const rt, wchar_t *message, unsigned char mode)
 {
      wchar_t score[63];
      mode ?
-          swprintf_s(score, 63, message, vyper->coins, vyper->win) :
-          swprintf_s(score, 63, message, vyper->coins, vyper->maxscore) ;
+          swprintf_s(score, 63, message, vyper->Coins, vyper->Win) :
+          swprintf_s(score, 63, message, vyper->Coins, vyper->MaxScore) ;
      HDC memDC = CreateCompatibleDC(dc);
      HBITMAP memBM = CreateCompatibleBitmap(dc, rt->right, rt->bottom);
      SelectObject(memDC, memBM);

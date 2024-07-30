@@ -1,93 +1,93 @@
-/* Keyboard input, read and write settings, process menu commands,
-   and restart the application */
+/* Keyboard input, read and write settings, process menu commands, and restart the application */
 
 #include <windows.h>
 #include "snakestruct.h"
 #include "winio.h"
 
 // Converts keystrokes into movement direction (in game logic format)
-void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * next_tick, unsigned char mode)
+void DispatchVector(WPARAM Key, CPoint * NewVect1, CPoint * NewVect2,
+                    DWORD * NextTick, unsigned char Mode)
 {
-     switch (key)
+     switch (Key)
      {
      case 0x41:               // Key LEFT (A)
-          newvect1->x = -1;
-          newvect1->y = 0;
+          NewVect1->x = -1;
+          NewVect1->y =  0;
           break;
 
      case 0x44:               // Key RIGHT (D)
-          newvect1->x = 1;
-          newvect1->y = 0;
+          NewVect1->x =  1;
+          NewVect1->y =  0;
           break;
 
      case 0x57:               // Key UP (W)
-          newvect1->x = 0;
-          newvect1->y = -1;
+          NewVect1->x =  0;
+          NewVect1->y = -1;
           break;
 
      case 0x53:               // Key DOWN (S)
-          newvect1->x = 0;
-          newvect1->y = 1;
+          NewVect1->x =  0;
+          NewVect1->y =  1;
           break;
 
      case 0x25:               // Key LEFT (arrow)
 
-          if (mode)
+          if (Mode)
           {
-               newvect2->x = -1;
-               newvect2->y = 0;
+               NewVect2->x = -1;
+               NewVect2->y =  0;
           }
           else
           {
-               newvect1->x = -1;
-               newvect1->y = 0;
+               NewVect1->x = -1;
+               NewVect1->y =  0;
           }
      break;
 
      case 0x27:               // Key RIGHT (arrow)
 
-          if (mode)
+          if (Mode)
           {
-               newvect2->x = 1;
-               newvect2->y = 0;
+               NewVect2->x =  1;
+               NewVect2->y =  0;
           }
           else
           {
-               newvect1->x = 1;
-               newvect1->y = 0;
+               NewVect1->x =  1;
+               NewVect1->y =  0;
           }
           break;
 
      case 0x26:               // Key UP (arrow)
 
-          if (mode)
+          if (Mode)
           {
-               newvect2->x = 0;
-               newvect2->y = -1;
+               NewVect2->x =  0;
+               NewVect2->y = -1;
           }
           else
           {
-               newvect1->x = 0;
-               newvect1->y = -1;
+               NewVect1->x =  0;
+               NewVect1->y = -1;
           }
           break;
 
      case 0x28:               // Key DOWN (arrow)
 
-          if (mode)
+          if (Mode)
           {
-               newvect2->x = 0;
-               newvect2->y = 1;
+               NewVect2->x =  0;
+               NewVect2->y =  1;
           }
           else
           {
-               newvect1->x = 0;
-               newvect1->y = 1;
+               NewVect1->x =  0;
+               NewVect1->y =  1;
           }
           break;
 
      case 0x1B:               // Key PAUSE (ESC)
-          *next_tick = *next_tick != UINT_MAX ? UINT_MAX : GetTickCount();
+          *NextTick = *NextTick != UINT_MAX ? UINT_MAX : GetTickCount();
           break;
 
      default:
@@ -96,43 +96,43 @@ void DispatchVector(WPARAM key, cpoint * newvect1, cpoint * newvect2, DWORD * ne
 }
 
 // Handling menu item selections
-void DispatchMenu(WPARAM val, savedata *gamesettings)
+void DispatchMenu(WPARAM Val, SaveData *GameSettings)
 {
-     switch (val)
+     switch (Val)
      {
      case 1001:
-          gamesettings->map.x = SMALLMAPX;
-          gamesettings->map.y = SMALLMAPY;
+          GameSettings->Map.x = SMALLMAPX;
+          GameSettings->Map.y = SMALLMAPY;
           break;
 
      case 1002:
-          gamesettings->map.x = MEDIUMMAPX;
-          gamesettings->map.y = MEDIUMMAPY;
+          GameSettings->Map.x = MEDIUMMAPX;
+          GameSettings->Map.y = MEDIUMMAPY;
           break;
 
      case 1003:
-          gamesettings->map.x = LARGEMAPX;
-          gamesettings->map.y = LARGEMAPY;
+          GameSettings->Map.x = LARGEMAPX;
+          GameSettings->Map.y = LARGEMAPY;
           break;
 
      case 1011:
-          gamesettings->scale = BIGSCALE;
+          GameSettings->Scale = BIGSCALE;
           break;
 
      case 1012:
-          gamesettings->scale = HUGESCALE;
+          GameSettings->Scale = HUGESCALE;
           break;
 
      case 1013:
-          gamesettings->mode = 0;
+          GameSettings->Mode = 0;
           break;
 
      case 1014:
-          gamesettings->mode = 1;
+          GameSettings->Mode = 1;
           break;
 
      case 1100:
-          gamesettings->lang = !(gamesettings->lang);
+          GameSettings->Lang = !(GameSettings->Lang);
           break;
 
      default:
@@ -140,21 +140,22 @@ void DispatchMenu(WPARAM val, savedata *gamesettings)
      }
 }
 
-savedata ReadSavegame(void) // No comments..
+SaveData ReadSavegame(void) // No comments..
 {
-     savedata usersave = { .map = {.x = MEDIUMMAPX, .y = MEDIUMMAPY},
-                           .scale = BIGSCALE, .lang = 0, .mode = 0,
-                           .maxs = 0 };
-     HANDLE hFile = CreateFileW(L"snake2.sav", GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+     SaveData usersave = { .Map = {.x = MEDIUMMAPX, .y = MEDIUMMAPY},
+                           .Scale = BIGSCALE, .Lang = 0, .Mode = 0,
+                           .MaxS = 0 };
+     HANDLE hFile = CreateFileW(L"snake2.sav", GENERIC_READ, 0, NULL,
+                                OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
      if (INVALID_HANDLE_VALUE == hFile) return usersave; // FIXME! Write check correctness later
      ReadFile(hFile, &usersave, sizeof(usersave), NULL, NULL);
      CloseHandle(hFile);
      return usersave;
 }
 
-gamelang ReadGamelang(unsigned char num)
+GameLang ReadGamelang(unsigned char Num)
 {
-     gamelang userlang = { .str1001 = L"Small",    .str1002 = L"Medium",        .str1003 = L"Large",
+     GameLang userlang = { .str1001 = L"Small",    .str1002 = L"Medium",        .str1003 = L"Large",
                            .str1008 = L"Map size", .str1009 = L"Scale",         .str1011 = L"Big",
                            .str1012 = L"Huge",     .str1013 = L"One Player", .str1014 = L"Two Players",
                            .str1100 = L"Language", .str1110 = L"Game Mode",
@@ -162,9 +163,10 @@ gamelang ReadGamelang(unsigned char num)
                            .str1502 = L"\nScore\n\n%07i\n\nMax Score\n\n%07i",
                            .str1503 = L"\nTo start the game \njust select a direction\n\nSelecting direction - \narrows or «W S A D»\non the keyboard\n\nEscape - pause\n\n\nAll changes to game \nsettings require a \nrestart\n",
                          };
-     if (num)
+     if (Num)
      {
-          HANDLE hFile = CreateFileW(L"snake.lng", GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+          HANDLE hFile = CreateFileW(L"snake.lng", GENERIC_READ, 0, NULL, OPEN_EXISTING,
+                                     FILE_ATTRIBUTE_NORMAL, NULL);
           if (INVALID_HANDLE_VALUE == hFile) return userlang; // FIXME! Write check correctness later
           ReadFile(hFile, &userlang, sizeof(userlang), NULL, NULL);
           CloseHandle(hFile);
@@ -172,14 +174,15 @@ gamelang ReadGamelang(unsigned char num)
      return userlang;
 }
 
-void WriteSavegame(savedata const *gamesettings, int maxscore)
+void WriteSavegame(SaveData const *GameSettings, int MaxScore)
 {
-     HANDLE hFile = CreateFileW(L"snake2.sav", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+     HANDLE hFile = CreateFileW(L"snake2.sav", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
+                                FILE_ATTRIBUTE_NORMAL, NULL);
      if (INVALID_HANDLE_VALUE == hFile) return;
-     savedata usersave = { .map = gamesettings->map,
-                           .scale = gamesettings->scale,
-                           .mode = gamesettings->mode,
-                           .lang = gamesettings->lang, .maxs = maxscore
+     SaveData usersave = { .Map = GameSettings->Map,
+                           .Scale = GameSettings->Scale,
+                           .Mode = GameSettings->Mode,
+                           .Lang = GameSettings->Lang, .MaxS = MaxScore
                          };
      WriteFile(hFile, &usersave, sizeof(usersave), NULL, NULL);
      CloseHandle(hFile);

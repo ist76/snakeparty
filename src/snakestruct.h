@@ -1,42 +1,42 @@
+// Basic structures - cell point, Snake and Fruit
 #define DEFCOINS 100
 #define DEFTICKS 256
 
-// Basic structures - cell point, snake and fruit
-typedef struct cpoint     // The logic of the game is calculated in "cells"
+typedef struct CPoint     // The logic of the game is calculated in "cells"
 {
      short x, y;
-} cpoint;
+} CPoint;
 
-typedef struct snake      // All snake data
+typedef struct Snake      // All Snake data
 {
-     cpoint body[254];    // An array of segment coordinates (I hope 254 is enough)
-     cpoint vectr;        // Current direction of the snake
-     cpoint newvectr;     // Player-entered direction
-     int coins;           // Current score
-     int maxscore;        // Game bestscore
-     short len;           // Current snake length (in segments)
-     short win;           // Wins counter
-} snake;
+     CPoint Body[254];    // An array of segment coordinates (I hope 254 is enough)
+     CPoint Vectr;        // Current direction of the Snake
+     CPoint NewVectr;     // Player-entered direction
+     int    Coins;        // Current score
+     int    MaxScore;     // Game bestscore
+     short  Len;          // Current Snake length (in segments)
+     short  Win;          // Wins counter
+} Snake;
 
 enum FruitColor
 {
      ColorBlack = -10,
-     ColorRed = 1,
-     ColorGold = 5,
+     ColorRed   = 1,
+     ColorGold  = 5,
 };
 
-typedef struct fruit
+typedef struct Fruit
 {
-     cpoint coord;
-     int price;
-     int ttl;
-} fruit;
+     CPoint Coord;
+     int    Price;
+     int    Ttl;
+} Fruit;
 
-typedef struct savedata
+typedef struct SaveData
 {
-     cpoint map;            // Level size in cells
-     int maxs;              // Global game best score
-     short scale;           // Interface scale
-     unsigned char mode;    // 0 - singleplayer 1 - two players
-     unsigned char lang;    // Interface language (only 0 or 1)
-} savedata;
+     CPoint        Map;     // Level size in cells
+     int           MaxS;    // Global game best score
+     short         Scale;   // Interface Scale
+     unsigned char Mode;    // 0 - singleplayer 1 - two players
+     unsigned char Lang;    // Interface language (only 0 or 1)
+} SaveData;
