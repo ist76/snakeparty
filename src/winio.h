@@ -1,4 +1,4 @@
-// Interface strings structure and some function prototypes
+/* Interface strings structure and some function prototypes */
 
 // Constants for possible game level sizes and application scaling
 #define SMALLMAPX  24
@@ -9,7 +9,7 @@
 #define LARGEMAPY  24
 #define BIGSCALE   32
 #define HUGESCALE  38
-#define RENDERLAG  16  // Pause (ms) between game level redraw cycles
+#define RENDERLAG  16       // Pause (ms) between game level redraw cycles
 
 typedef struct GameLang
 {

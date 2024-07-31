@@ -12,7 +12,7 @@
    For project build in MinGW64 with UTF-8 support, need use wchar_t types, w-functions,
    'L'-prefix for all strings and $gcc ... '-municode'
 
-    2024 Ivan Tarasov ist76ist@gmail.com */
+   2024 Ivan Tarasov ist76ist@gmail.com */
 
 #include <stdio.h>
 #include <windows.h>
@@ -79,15 +79,15 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     MakeMenu(hwnd, &GSets, &Marks);
     /* End of creating GUI */
 
-    srand(GetTickCount());                                             // For generate Apple
-    Fruit Apple;                                                       // Make empty Apple struct
-    SnakeRestart(&GSets, Anaconda, Bushmaster, &GameTicks, &Apple);    // Game first initialization
-    DWORD NextGameTick = GetTickCount();                               // Timer for game loop
-    DWORD NextRenderTick = GetTickCount();                             // Timer for render loop
-    MSG   msg;                                                         // Messages from app
-    HDC   dc;                                                          // Temporary context
+    RandState = GetTickCount();                                       // For generate apple using custom func in logic.c
+    Fruit Apple;                                                      // Make empty Apple struct
+    SnakeRestart(&GSets, Anaconda, Bushmaster, &GameTicks, &Apple);   // Game first initialization
+    DWORD NextGameTick = GetTickCount();                              // Timer for game loop
+    DWORD NextRenderTick = GetTickCount();                            // Timer for render loop
+    MSG   msg;                                                        // Messages from app
+    HDC   dc;                                                         // Temporary context
 
-    for (;(Anaconda->Len < 253) || (Bushmaster->Len < 253);) // Main Game loop. Remember the Snake.Body[254]
+    for (;(Anaconda->Len < 253) || (Bushmaster->Len < 253);) // Main Game loop. Remember, the Snake.Body[254]
     {
         if (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
         {
@@ -160,27 +160,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     }
     return 0;
 }
-
-/* An example of a function that creates a file with a localized interface.
-Just write your lines in the appropriate positions and run the function
-(See winio.h for details) */
-/*
-static void WriteGameLang(void)
-{
-    GameLang userlang = { .str1001 = L"Малый",        .str1002 = L"Средний",        .str1003 = L"Большой",
-                            .str1008 = L"Размер карты", .str1009 = L"Масштаб",        .str1011 = L"Крупный",
-                            .str1012 = L"Огромный",     .str1013 = L"Один игрок",     .str1014 = L"Два игрока",
-                            .str1100 = L"Язык",         .str1110 = L"Режим игры",
-                            .str1501 = L"\nОчков:\n\n%07i\n\nПобед:\n\n%i",
-                            .str1502 = L"\nОчков:\n\n%07i\n\nРекорд\n\n%07i",
-                            .str1503 = L"\nВыберите направление \nчтобы играть\n\nУправление: \nстрелки или\n«W S A D»\nна клавиатуре\n\nEscape - пауза\n\n\nИзменение любых\nнастроек требует\nперезапуска\n",
-                        };
-    HANDLE hFile = CreateFile(L"Snake.lng", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (INVALID_HANDLE_VALUE == hFile) return;
-    WriteFile(hFile, &userlang, sizeof(userlang), NULL, NULL);
-    CloseHandle(hFile);
-}
-*/
 
 // Make main menu
 static inline void MakeMenu(HWND hwnd, SaveData *GSets, GameLang *Marks)
@@ -297,3 +276,24 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM l
     if (message == WM_DESTROY) PostQuitMessage(0);
     return DefWindowProc(hwnd, message, wparam, lparam);
 }
+
+/* An example of a function that creates a file with a localized interface.
+Just write your lines in the appropriate positions and run the function
+(See winio.h for details) */
+/*
+static void WriteGameLang(void)
+{
+    GameLang userlang = { .str1001 = L"Малый",        .str1002 = L"Средний",        .str1003 = L"Большой",
+                            .str1008 = L"Размер карты", .str1009 = L"Масштаб",        .str1011 = L"Крупный",
+                            .str1012 = L"Огромный",     .str1013 = L"Один игрок",     .str1014 = L"Два игрока",
+                            .str1100 = L"Язык",         .str1110 = L"Режим игры",
+                            .str1501 = L"\nОчков:\n\n%07i\n\nПобед:\n\n%i",
+                            .str1502 = L"\nОчков:\n\n%07i\n\nРекорд\n\n%07i",
+                            .str1503 = L"\nВыберите направление \nчтобы играть\n\nУправление: \nстрелки или\n«W S A D»\nна клавиатуре\n\nEscape - пауза\n\n\nИзменение любых\nнастроек требует\nперезапуска\n",
+                        };
+    HANDLE hFile = CreateFile(L"Snake.lng", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (INVALID_HANDLE_VALUE == hFile) return;
+    WriteFile(hFile, &userlang, sizeof(userlang), NULL, NULL);
+    CloseHandle(hFile);
+}
+*/

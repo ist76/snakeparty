@@ -3,8 +3,17 @@
    The '0' value must be assigned in main()
    Also main() should run initialization before the Game loop */
 
-#include <stdlib.h>
 #include "snakestruct.h"
+
+unsigned int LCGRand(unsigned int *RandState)  // Variant of Lehmer random generator
+{
+     unsigned long long Prod = (unsigned long long) * RandState * 279470273u;
+     unsigned int x;
+     Prod = (Prod & 0xffffffff) + 5 * (unsigned int)(Prod >> 32);
+     Prod += 4;
+     x = (unsigned int)Prod + 5 * (unsigned int)(Prod >> 32);
+     return *RandState = x - 4;
+}
 
 static int IfPointArray(CPoint const *Dot, Snake *Vyper)
 {
@@ -19,15 +28,16 @@ static int IfPointArray(CPoint const *Dot, Snake *Vyper)
 static Fruit GetFruit(CPoint const *Map, Snake *Vyper, Snake * Wutu)
 {
     Fruit NewFruit;
+    extern unsigned int RandState;
     do
     {
-          NewFruit.Coord.x = rand() % Map->x;
-          NewFruit.Coord.y = rand() % Map->y;
+          NewFruit.Coord.x = LCGRand(&RandState) % Map->x;
+          NewFruit.Coord.y = LCGRand(&RandState) % Map->y;
     }
     while (IfPointArray(&NewFruit.Coord, Vyper) ||
            IfPointArray(&NewFruit.Coord, Wutu));
 
-    int FruitWeight = rand();  // temporary for .Price
+    unsigned int FruitWeight = LCGRand(&RandState);  // temporary for .Price
 
     if (FruitWeight % 7 == 0)
     {
