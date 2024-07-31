@@ -30,10 +30,10 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     Actors *AllActors = malloc(sizeof(Actors));                  // For render level, look at winproc.h
             AllActors->LevelWin.x = GSets.Map.x * GSets.Scale;   // Set game level size in px
             AllActors->LevelWin.y = GSets.Map.y * GSets.Scale;   // Heap is used instead of stack to keep stack less than 1MB
-        Anaconda->Win = 0;
-        Anaconda->Coins = 0;                                     // A crutch that prevents you from filling your MaxScore with garbage
+        Anaconda->Win      = 0;
+        Anaconda->Coins    = 0;                                  // A crutch that prevents you from filling your MaxScore with garbage
         Anaconda->MaxScore = GSets.MaxS;
-        Bushmaster->Win = 0;
+        Bushmaster->Win    = 0;
     RECT ScoreTable;                                             // Size of score table
     SetRect(&ScoreTable, 0, 0, 7 * GSets.Scale,
            (GSets.Map.x/3 - 1) * GSets.Scale + GSets.Scale/2);
@@ -86,20 +86,21 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     DWORD NextRenderTick = GetTickCount();                            // Timer for render loop
     MSG   msg;                                                        // Messages from app
     HDC   dc;                                                         // Temporary context
+    wchar_t Score[63];
 
     for (;(Anaconda->Len < 253) || (Bushmaster->Len < 253);) // Main Game loop. Remember, the Snake.Body[254]
     {
         if (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
         {
             // Processing keyboard commands
-            if (msg.message == WM_KEYDOWN) DispatchVector(msg.wParam, &(Anaconda->NewVectr), &(Bushmaster->NewVectr),
-                &NextGameTick, GSets.Mode);
+            if (msg.message == WM_KEYDOWN) DispatchVector(msg.wParam, &(Anaconda->NewVectr),
+                                           &(Bushmaster->NewVectr), &NextGameTick, GSets.Mode);
 
             // When you select a menu item, the settings are overwritten and the application is restarted
             if (msg.message == WM_COMMAND)
             {
-                DispatchMenu(msg.wParam, &GSets);
-                WriteSavegame(&GSets, Anaconda->MaxScore);
+                DispatchMenu  (msg.wParam, &GSets);
+                WriteSavegame (&GSets, Anaconda->MaxScore);
                 RunAppCopy();  // Try restart the application
                 break;
             }
@@ -123,38 +124,39 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
                 {
                     SnakeRestart(&GSets, Anaconda, Bushmaster, &GameTicks, &Apple);
                 }
-                dc = GetDC(Scores2);  // Draw solution in scores-2 window
-                SolutionShow(dc, hFontS, &ScoreTable, Marks.str1503);
-                ReleaseDC(Scores2, dc);
+                dc = GetDC    (Scores2);          // Draw solution in scores-2 window
+                SolutionShow  (dc, hFontS, &ScoreTable, Marks.str1503);
+                ReleaseDC     (Scores2, dc);
             }
 
             else
             {
-                if (!SnakeLogic(&GSets, &Apple, &GameTicks, Anaconda, Bushmaster) ||
-                    !SnakeLogic(&GSets, &Apple, &GameTicks, Bushmaster, Anaconda))
+                if (!SnakeLogic (&GSets, &Apple, &GameTicks, Anaconda, Bushmaster) ||
+                    !SnakeLogic (&GSets, &Apple, &GameTicks, Bushmaster, Anaconda))
                 {
                     SnakeRestart(&GSets, Anaconda, Bushmaster, &GameTicks, &Apple);
                 }
-                dc = GetDC(Scores2);  // Draw scores in scores-2 window
-                ScoresShow(dc, Bushmaster, hFont, &ScoreTable, Marks.str1501, GSets.Mode);
-                ReleaseDC(Scores2, dc);
+                SetInfo(Score, &Marks, Bushmaster, &GSets);
+                dc = GetDC    (Scores2);  // Draw scores in scores-2 window
+                SolutionShow  (dc, hFont, &ScoreTable, Score);
+                ReleaseDC     (Scores2, dc);
             }
 
             // We calculate the coordinates of all Actors not every 16ms, but only ever GameTick
-            SetApple(AllActors, &Apple, GSets.Scale);
-            GetSnakesCells(AllActors, Anaconda, Bushmaster, &GSets);
-            dc = GetDC(Scores1);  // Draw scores in scores-1 window
-            ScoresShow(dc, Anaconda, hFont, &ScoreTable, GSets.Mode ?
-                       Marks.str1501 : Marks.str1502, GSets.Mode);
-            ReleaseDC(Scores1, dc);
+            SetApple       (AllActors, &Apple, GSets.Scale);
+            GetSnakesCells (AllActors, Anaconda, Bushmaster, &GSets);
+            SetInfo        (Score, &Marks, Anaconda, &GSets);
+            dc = GetDC     (Scores1);  // Draw scores in scores-1 window
+            SolutionShow   (dc, hFont, &ScoreTable, Score);
+            ReleaseDC      (Scores1, dc);
             NextGameTick += GameTicks;
         }
 
         while (GetTickCount() > NextRenderTick)
         {
-            dc = GetDC(GameMap);  // Draw level and actors
-            ActorsShow(dc, AllActors, GSets.Mode);
-            ReleaseDC(GameMap, dc);
+            dc = GetDC     (GameMap);  // Draw level and actors
+            ActorsShow     (dc, AllActors, GSets.Mode);
+            ReleaseDC      (GameMap, dc);
             NextRenderTick += RENDERLAG;
         }
     }
@@ -215,12 +217,16 @@ static void GetSnakeColors(Actors* Allobj, unsigned char Mode)
 {
     for (short i = 0; i <= 63; i++)
     {
-        Allobj->AColor[i] = Allobj->AColor[126 - i] = Allobj->AColor[126 + i] =
-            Allobj->AColor[253 - i] = RGB(i * 4, 249, 255 - i * 4);
+        Allobj->AColor[i] = Allobj->AColor[126 - i]
+                          = Allobj->AColor[126 + i]
+                          = Allobj->AColor[253 - i]
+                          = RGB(i * 4, 249, 255 - i * 4);
         if (Mode)
         {
-            Allobj->BColor[i] = Allobj->BColor[126 - i] = Allobj->BColor[126 + i] =
-                Allobj->BColor[253 - i] = RGB(191 + i, i * 4, 255 - i);
+            Allobj->BColor[i] = Allobj->BColor[126 - i]
+                              = Allobj->BColor[126 + i]
+                              = Allobj->BColor[253 - i]
+                              = RGB(191 + i, i * 4, 255 - i);
         }
     }
 }
@@ -231,18 +237,18 @@ static void GetGrid(Actors *Allobj, CPoint Map, short Scale)
     short counter = 0;
     for (short i = 0; i < Map.x; i++)
     {
-        Allobj->Grid[counter].left = (i + 1) * Scale;
-        Allobj->Grid[counter].top = 1;
-        Allobj->Grid[counter].right = (i + 1) * Scale;
-        Allobj->Grid[counter].bottom = Map.y * Scale - 1;
+        Allobj->Grid[counter].left    = (i + 1) * Scale;
+        Allobj->Grid[counter].top     = 1;
+        Allobj->Grid[counter].right   = (i + 1) * Scale;
+        Allobj->Grid[counter].bottom  = Map.y * Scale - 1;
         counter++;
     }
     for (short i = 0; i < Map.y; i++)
     {
-        Allobj->Grid[counter].left = 1;
-        Allobj->Grid[counter].top = (i + 1) * Scale;
-        Allobj->Grid[counter].right = Map.x * Scale - 1;
-        Allobj->Grid[counter].bottom = (i + 1) * Scale;
+        Allobj->Grid[counter].left    = 1;
+        Allobj->Grid[counter].top     = (i + 1) * Scale;
+        Allobj->Grid[counter].right   = Map.x * Scale - 1;
+        Allobj->Grid[counter].bottom  = (i + 1) * Scale;
         counter++;
     }
     Allobj->GLen = counter;
@@ -265,16 +271,37 @@ static inline void SetApple(Actors *Allobj, Fruit *Apple, short Scale)
         Allobj->AppleColor = 0x000000FF;
         break;
     }
-    Allobj->RApple.left = Apple->Coord.x * Scale + 2;
-    Allobj->RApple.top = Apple->Coord.y * Scale + 2;
-    Allobj->RApple.right = (Apple->Coord.x + 1) * Scale - 2;
+    Allobj->RApple.left   = Apple->Coord.x * Scale + 2;
+    Allobj->RApple.top    = Apple->Coord.y * Scale + 2;
+    Allobj->RApple.right  = (Apple->Coord.x + 1) * Scale - 2;
     Allobj->RApple.bottom = (Apple->Coord.y + 1) * Scale - 2;
+}
+
+// Generates text for game boards
+static inline void SetInfo(wchar_t *Score, GameLang *Marks, Snake *Vyper, SaveData *Sets)
+{
+    Sets->Mode ? swprintf_s(Score, 63, Marks->str1501, Vyper->Coins, Vyper->Win):
+                 swprintf_s(Score, 63, Marks->str1502, Vyper->Coins, Vyper->MaxScore);
 }
 
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
     if (message == WM_DESTROY) PostQuitMessage(0);
     return DefWindowProc(hwnd, message, wparam, lparam);
+}
+
+static inline void RunAppCopy(void)
+{
+     wchar_t path[256];
+     GetModuleFileNameW(0, path, 256); // Get full name of snake.exe
+     STARTUPINFOW si;  // Example of using CreateProcess from MSDN
+     PROCESS_INFORMATION pi;
+     memset( &si, 0, sizeof(si));
+     si.cb = sizeof(si);
+     memset(&pi, 0, sizeof(pi));
+     CreateProcessW(path, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+     CloseHandle(pi.hProcess);
+     CloseHandle(pi.hThread);
 }
 
 /* An example of a function that creates a file with a localized interface.

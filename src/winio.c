@@ -187,17 +187,3 @@ void WriteSavegame(SaveData const *GameSettings, int MaxScore)
      WriteFile(hFile, &usersave, sizeof(usersave), NULL, NULL);
      CloseHandle(hFile);
 }
-
-void RunAppCopy(void)
-{
-     wchar_t path[256];
-     GetModuleFileNameW(0, path, 256); // Get full name of snake.exe
-     STARTUPINFOW si;  // Example of using CreateProcess from MSDN
-     PROCESS_INFORMATION pi;
-     ZeroMemory( &si,sizeof(si));
-     si.cb = sizeof(si);
-     ZeroMemory(&pi, sizeof(pi));
-     CreateProcessW(path, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
-     CloseHandle(pi.hProcess);
-     CloseHandle(pi.hThread);
-}

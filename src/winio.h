@@ -34,4 +34,3 @@ GameLang ReadGamelang(unsigned char Num);
 void     DispatchVector(WPARAM Key, CPoint *NewVect1, CPoint *NewVect2, DWORD *NextTick, unsigned char Mode);
 void     DispatchMenu(WPARAM Val, SaveData *GameSettings);
 void     WriteSavegame(SaveData const *GameSettings, int MaxScore);
-void     RunAppCopy(void);
