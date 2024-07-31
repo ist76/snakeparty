@@ -1,6 +1,6 @@
 1 VERSIONINFO
-FILEVERSION     1,0,0,0
-PRODUCTVERSION  1,0,0,0
+FILEVERSION     1,0,2,0
+PRODUCTVERSION  1,0,2,0
 BEGIN
   BLOCK "StringFileInfo"
   BEGIN
@@ -13,7 +13,7 @@ BEGIN
       VALUE "LegalCopyright", "ist76"
       VALUE "OriginalFilename", "snake2.exe"
       VALUE "ProductName", "Snake Party"
-      VALUE "ProductVersion", "1.00"
+      VALUE "ProductVersion", "1.02"
     END
   END
   BLOCK "VarFileInfo"

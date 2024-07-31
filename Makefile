@@ -1,5 +1,4 @@
 # Install
-
 BIN = snake2
 
 # Flags
