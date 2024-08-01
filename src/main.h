@@ -1,11 +1,10 @@
 /* Declarations for main() */
 
-unsigned int RandState;  // Global state for custom random numbers generator
-
-int  SnakeLogic(SaveData const *Game, Fruit *Apple, int *Ticks, Snake *Vyper, Snake *Wutu);
-void SnakeRestart(SaveData const *Game, Snake *Vyper, Snake *Wutu, int *Ticks, Fruit *Apple);
-void ActorsShow(HDC dc, Actors *AllObj, unsigned char Mode);
-void SolutionShow(HDC dc, HFONT Font, RECT * const rt, wchar_t *Message);
+int  SnakeLogic(SaveData const *Game, Fruit *Apple, int *Ticks, Snake *Vyper, Snake *Wutu, unsigned int *State);
+void SnakeRestart(SaveData const *Game, Fruit *Apple, int *Ticks, Snake *Vyper, Snake *Wutu, unsigned int *State);
+void ActorsShow(HWND Window, Actors *AllObj, unsigned char Mode);
+void SolutionShow(HWND Window, HFONT Font, RECT * const rt, wchar_t *Message);
+void DrawInterruption(HWND Window, Actors *AllObj);
 
 static inline void MakeMenu(HWND hwnd, SaveData *GSets, GameLang *Marks);
 static inline void GetSnakesCells(Actors *Allobj, Snake const *Vyper, Snake const *Wutu, SaveData *const Sets);

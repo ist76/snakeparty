@@ -23,20 +23,20 @@
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ PWSTR pCmdLine, _In_ int nCmdShow)
 {
-    SaveData GSets = ReadSavegame();                             // Get previously saved data
+    SaveData GSets    = ReadSavegame();                          // Get previously saved data
     int GameTicks;                                               // Latency (ms) between game loops
-    Snake *Anaconda   = malloc(sizeof(Snake));                   // First Snake
+    Snake *Anaconda   = malloc(sizeof(Snake));                   // First  Snake
     Snake *Bushmaster = malloc(sizeof(Snake));                   // Second Snake
     Actors *AllActors = malloc(sizeof(Actors));                  // For render level, look at winproc.h
             AllActors->LevelWin.x = GSets.Map.x * GSets.Scale;   // Set game level size in px
             AllActors->LevelWin.y = GSets.Map.y * GSets.Scale;   // Heap is used instead of stack to keep stack less than 1MB
-        Anaconda->Win      = 0;
-        Anaconda->Coins    = 0;                                  // A crutch that prevents you from filling your MaxScore with garbage
-        Anaconda->MaxScore = GSets.MaxS;
-        Bushmaster->Win    = 0;
-    RECT ScoreTable;                                             // Size of score table
-    SetRect(&ScoreTable, 0, 0, 7 * GSets.Scale,
-           (GSets.Map.x/3 - 1) * GSets.Scale + GSets.Scale/2);
+        Anaconda->Win             = 0;
+        Anaconda->Coins           = 0;                           // A crutch that prevents you from filling your MaxScore with garbage
+        Anaconda->MaxScore        = GSets.MaxS;
+        Bushmaster->Win           = 0;
+    RECT ScoreTable = { 0, 0, 7 * GSets.Scale,
+                       (GSets.Map.x/3 - 1) * GSets.Scale
+                        + GSets.Scale/2 };
     GetGrid(AllActors, GSets.Map, GSets.Scale);                  // Array of points to draw the grid
     GetSnakeColors(AllActors, GSets.Mode);                       // Array of snakes cells colors
     GameLang Marks = ReadGamelang(GSets.Lang);                   // Get localization from file
@@ -79,14 +79,15 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     MakeMenu(hwnd, &GSets, &Marks);
     /* End of creating GUI */
 
-    RandState = GetTickCount();                                       // For generate apple using custom func in logic.c
-    Fruit Apple;                                                      // Make empty Apple struct
-    SnakeRestart(&GSets, Anaconda, Bushmaster, &GameTicks, &Apple);   // Game first initialization
-    DWORD NextGameTick = GetTickCount();                              // Timer for game loop
-    DWORD NextRenderTick = GetTickCount();                            // Timer for render loop
-    MSG   msg;                                                        // Messages from app
-    HDC   dc;                                                         // Temporary context
-    wchar_t Score[63];
+    unsigned int State = (unsigned int)GetTickCount();    // For generate apple using custom func in logic.c
+    Fruit   Apple;                                        // Make empty Apple struct
+    DWORD   NextGameTick = GetTickCount();                // Timer for game loop
+    DWORD   NextRenderTick = GetTickCount();              // Timer for render loop
+    MSG     msg;                                          // Messages from app
+    wchar_t Score[63];                                    // Messages for players
+
+    SnakeRestart(&GSets, &Apple, &GameTicks, Anaconda, Bushmaster, &State);     // Game first initialization
+    DrawInterruption(GameMap, AllActors);
 
     for (;(Anaconda->Len < 253) || (Bushmaster->Len < 253);) // Main Game loop. Remember, the Snake.Body[254]
     {
@@ -100,63 +101,52 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             if (msg.message == WM_COMMAND)
             {
                 DispatchMenu  (msg.wParam, &GSets);
-                WriteSavegame (&GSets, Anaconda->MaxScore);
+                WriteSavegame (&GSets, Anaconda->MaxScore);  // Autosave
                 RunAppCopy();  // Try restart the application
                 break;
             }
-
-            // Autosave on exit
             if (msg.message == WM_QUIT)
             {
-                WriteSavegame(&GSets, Anaconda->MaxScore);
+                WriteSavegame(&GSets, Anaconda->MaxScore);  // Autosave on exit
                 break;
             }
             DispatchMessageW(&msg);
         }
-
-        Sleep(1); // Sleep, save the Battery!
-
+        Sleep(1);
         while (GetTickCount() > NextGameTick)
         {
             if (!GSets.Mode)  // if singleplayer
             {
-                if (!SnakeLogic(&GSets, &Apple, &GameTicks, Anaconda, Bushmaster))  // Snake suicide?
+                if (!SnakeLogic(&GSets, &Apple, &GameTicks, Anaconda, Bushmaster, &State))  // Snake suicide?
                 {
-                    SnakeRestart(&GSets, Anaconda, Bushmaster, &GameTicks, &Apple);
+                    DrawInterruption(GameMap, AllActors);
+                    SnakeRestart(&GSets, &Apple, &GameTicks, Anaconda, Bushmaster, &State);
                 }
-                dc = GetDC    (Scores2);          // Draw solution in scores-2 window
-                SolutionShow  (dc, hFontS, &ScoreTable, Marks.str1503);
-                ReleaseDC     (Scores2, dc);
+                SolutionShow  (Scores2, hFontS, &ScoreTable, Marks.str1503); // Draw solution in scores-2 window
             }
 
             else
             {
-                if (!SnakeLogic (&GSets, &Apple, &GameTicks, Anaconda, Bushmaster) ||
-                    !SnakeLogic (&GSets, &Apple, &GameTicks, Bushmaster, Anaconda))
+                if (!SnakeLogic (&GSets, &Apple, &GameTicks, Anaconda, Bushmaster, &State) ||
+                    !SnakeLogic (&GSets, &Apple, &GameTicks, Bushmaster, Anaconda, &State))
                 {
-                    SnakeRestart(&GSets, Anaconda, Bushmaster, &GameTicks, &Apple);
+                    DrawInterruption(GameMap, AllActors);
+                    SnakeRestart(&GSets, &Apple, &GameTicks, Anaconda, Bushmaster, &State);
                 }
                 SetInfo(Score, &Marks, Bushmaster, &GSets);
-                dc = GetDC    (Scores2);  // Draw scores in scores-2 window
-                SolutionShow  (dc, hFont, &ScoreTable, Score);
-                ReleaseDC     (Scores2, dc);
+                SolutionShow  (Scores2, hFont, &ScoreTable, Score); // Draw scores in scores-2 window
             }
-
             // We calculate the coordinates of all Actors not every 16ms, but only ever GameTick
             SetApple       (AllActors, &Apple, GSets.Scale);
             GetSnakesCells (AllActors, Anaconda, Bushmaster, &GSets);
             SetInfo        (Score, &Marks, Anaconda, &GSets);
-            dc = GetDC     (Scores1);  // Draw scores in scores-1 window
-            SolutionShow   (dc, hFont, &ScoreTable, Score);
-            ReleaseDC      (Scores1, dc);
+            SolutionShow   (Scores1, hFont, &ScoreTable, Score); // Draw scores in scores-1 window
             NextGameTick += GameTicks;
         }
-
         while (GetTickCount() > NextRenderTick)
         {
-            dc = GetDC     (GameMap);  // Draw level and actors
-            ActorsShow     (dc, AllActors, GSets.Mode);
-            ReleaseDC      (GameMap, dc);
+            // Draw level and actors
+            ActorsShow     (GameMap, AllActors, GSets.Mode);
             NextRenderTick += RENDERLAG;
         }
     }

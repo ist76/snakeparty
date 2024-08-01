@@ -25,19 +25,18 @@ static int IfPointArray(CPoint const *Dot, Snake *Vyper)
      return 0;
 }
 
-static Fruit GetFruit(CPoint const *Map, Snake *Vyper, Snake * Wutu)
+static Fruit GetFruit(CPoint const *Map, Snake *Vyper, Snake * Wutu, unsigned int *State)
 {
     Fruit NewFruit;
-    extern unsigned int RandState;
     do
     {
-          NewFruit.Coord.x = LCGRand(&RandState) % Map->x;
-          NewFruit.Coord.y = LCGRand(&RandState) % Map->y;
+          NewFruit.Coord.x = LCGRand(State) % Map->x;
+          NewFruit.Coord.y = LCGRand(State) % Map->y;
     }
     while (IfPointArray(&NewFruit.Coord, Vyper) ||
            IfPointArray(&NewFruit.Coord, Wutu));
 
-    unsigned int FruitWeight = LCGRand(&RandState);  // temporary for .Price
+    unsigned int FruitWeight = LCGRand(State);  // temporary for .Price
 
     if (FruitWeight % 7 == 0)
     {
@@ -58,7 +57,7 @@ static Fruit GetFruit(CPoint const *Map, Snake *Vyper, Snake * Wutu)
 }
 
 // Restarting the snakes and creating the Apple
-void SnakeRestart(SaveData const *Game, Snake *Vyper, Snake *Wutu, int *Ticks, Fruit *Apple)
+void SnakeRestart(SaveData const *Game, Fruit *Apple, int *Ticks, Snake *Vyper, Snake *Wutu, unsigned int *State)
 {
      *Ticks = DEFTICKS;        // Base Snake speed: ~4 cell/s if 256
      Vyper->Vectr.x    = 0;    // The Snake stands still
@@ -84,7 +83,7 @@ void SnakeRestart(SaveData const *Game, Snake *Vyper, Snake *Wutu, int *Ticks, F
      Wutu->Body[0].y  = (Game->Map.y / 2);
      Wutu->Coins      = DEFCOINS;
 
-     *Apple = GetFruit(&Game->Map, Vyper, Wutu);  // Place the Apple on the level
+     *Apple = GetFruit(&Game->Map, Vyper, Wutu, State);  // Place the Apple on the level
 }
 
 // Calculation direction of Snake move
@@ -120,7 +119,7 @@ static inline void Crawl(Snake *Vyper, CPoint *Head)
 }
 
 // The Game logic
-int SnakeLogic(SaveData const *Game, Fruit *Apple, int *Ticks, Snake *Vyper, Snake *Wutu)
+int SnakeLogic(SaveData const *Game, Fruit *Apple, int *Ticks, Snake *Vyper, Snake *Wutu, unsigned int *State)
 {
      SetVectr(&Vyper->Vectr, &Vyper->NewVectr, &Vyper->Len);
      if (!(Vyper->Vectr.x) && !(Vyper->Vectr.y))  return -1;  // --> the Snake stands still, skip
@@ -167,6 +166,6 @@ int SnakeLogic(SaveData const *Game, Fruit *Apple, int *Ticks, Snake *Vyper, Sna
      }
      Crawl(Vyper, &Head);
      if (Apple->Ttl <= 0)
-        *Apple = GetFruit(&Game->Map, Vyper, Wutu);
+        *Apple = GetFruit(&Game->Map, Vyper, Wutu, State);
      return 1;                // --> normal exit
 }
