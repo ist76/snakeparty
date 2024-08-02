@@ -5,7 +5,7 @@
 #include "winio.h"
 
 // Converts keystrokes into movement direction (in game logic format)
-void DispatchVector(WPARAM Key, CPoint * NewVect1, CPoint * NewVect2,
+void DispatchVector(WPARAM Key, CPoint *NewVect1, CPoint *NewVect2,
                     DWORD * NextTick, unsigned char Mode)
 {
      switch (Key)

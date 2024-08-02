@@ -8,7 +8,7 @@
 #define LARGEMAPX  36
 #define LARGEMAPY  24
 #define BIGSCALE   32
-#define HUGESCALE  40
+#define HUGESCALE  38
 #define RENDERLAG  16       // Pause (ms) between game level redraw cycles
 
 typedef struct GameLang

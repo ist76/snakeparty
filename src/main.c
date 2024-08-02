@@ -112,8 +112,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             }
             DispatchMessageW(&msg);
         }
-        Sleep(1);
-        while (GetTickCount() > NextGameTick)
+        Sleep(INPUTLAG);      // Pause before new loop for reduce CPU usage
+
+        if (GetTickCount() > NextGameTick)
         {
             if (!GSets.Mode)  // if singleplayer
             {
@@ -143,7 +144,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             SolutionShow   (Scores1, hFont, &ScoreTable, Score); // Draw scores in scores-1 window
             NextGameTick += GameTicks;
         }
-        while (GetTickCount() > NextRenderTick)
+
+        if (GetTickCount() > NextRenderTick)
         {
             // Draw level and actors
             ActorsShow     (GameMap, AllActors, GSets.Mode);

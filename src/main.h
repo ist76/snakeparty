@@ -1,5 +1,7 @@
 /* Declarations for main() */
 
+#define INPUTLAG 1
+
 int  SnakeLogic(SaveData const *Game, Fruit *Apple, int *Ticks, Snake *Vyper, Snake *Wutu, unsigned int *State);
 void SnakeRestart(SaveData const *Game, Fruit *Apple, int *Ticks, Snake *Vyper, Snake *Wutu, unsigned int *State);
 void ActorsShow(HWND Window, Actors *AllObj, unsigned char Mode);
