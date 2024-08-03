@@ -24,7 +24,6 @@
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ PWSTR pCmdLine, _In_ int nCmdShow)
 {
     SaveData GSets    = ReadSavegame();                          // Get previously saved data
-    int GameTicks;                                               // Latency (ms) between game loops
     Snake *Anaconda   = malloc(sizeof(Snake));                   // First  Snake
     Snake *Bushmaster = malloc(sizeof(Snake));                   // Second Snake
     Actors *AllActors = malloc(sizeof(Actors));                  // For render level, look at winproc.h
@@ -37,8 +36,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     RECT ScoreTable = { 0, 0, 7 * GSets.Scale,
                        (GSets.Map.x/3 - 1) * GSets.Scale
                         + GSets.Scale/2 };
-    GetGrid(AllActors, GSets.Map, GSets.Scale);                  // Array of points to draw the grid
-    GetSnakeColors(AllActors, GSets.Mode);                       // Array of snakes cells colors
     GameLang Marks = ReadGamelang(GSets.Lang);                   // Get localization from file
     // WriteGameLang();  //  This function call generate Snake.lng file, if you need to create custom translate
 
@@ -79,14 +76,17 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     MakeMenu(hwnd, &GSets, &Marks);
     /* End of creating GUI */
 
-    unsigned int State = (unsigned int)GetTickCount();    // For generate apple using custom func in logic.c
-    Fruit   Apple;                                        // Make empty Apple struct
-    DWORD   NextGameTick = GetTickCount();                // Timer for game loop
-    DWORD   NextRenderTick = GetTickCount();              // Timer for render loop
-    MSG     msg;                                          // Messages from app
-    wchar_t Score[63];                                    // Messages for players
-
-    SnakeRestart(&GSets, &Apple, &GameTicks, Anaconda, Bushmaster, &State);     // Game first initialization
+    unsigned int State     = (unsigned int)GetTickCount();  // For generate apple using custom func in logic.c
+    Fruit   Apple;                                          // Make empty Apple struct
+    DWORD   NextGameTick   = GetTickCount();                // Timer for game loop
+    DWORD   NextRenderTick = GetTickCount();                // Timer for render loop
+    MSG     msg;                                            // Messages from app
+    wchar_t Score[63];                                      // Messages for players
+    int     GameTicks;                                      // Latency (ms) between game loops
+    GetGrid(AllActors, GSets.Map, GSets.Scale);             // Array of points to draw the grid
+    GetSnakeColors(AllActors, GSets.Mode);                  // Array of snakes cells colors
+    SnakeRestart(&GSets, &Apple, &GameTicks,
+                 Anaconda, Bushmaster, &State);             // Game first initialization
     DrawInterruption(GameMap, AllActors);
 
     for (;(Anaconda->Len < 253) || (Bushmaster->Len < 253);) // Main Game loop. Remember, the Snake.Body[254]
@@ -125,7 +125,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
                 }
                 SolutionShow  (Scores2, hFontS, &ScoreTable, Marks.str1503); // Draw solution in scores-2 window
             }
-
             else
             {
                 if (!SnakeLogic (&GSets, &Apple, &GameTicks, Anaconda, Bushmaster, &State) ||
