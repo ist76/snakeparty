@@ -211,12 +211,13 @@ static void GetSnakeColors(Actors* AllObj, unsigned char Mode)
                           = AllObj->AColor[126 + i]
                           = AllObj->AColor[253 - i]
                           = RGB(i * 4, 249, 255 - i * 4);
-        if (!Mode) return;
-
-        AllObj->BColor[i] = AllObj->BColor[126 - i]
-                          = AllObj->BColor[126 + i]
-                          = AllObj->BColor[253 - i]
-                          = RGB(191 + i, i * 4, 255 - i);
+        if (Mode)
+        {
+            AllObj->BColor[i] = AllObj->BColor[126 - i]
+                              = AllObj->BColor[126 + i]
+                              = AllObj->BColor[253 - i]
+                              = RGB(191 + i, i * 4, 255 - i);
+        }
     }
 }
 
