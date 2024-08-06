@@ -25,14 +25,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 {
     SaveData GSets    = ReadSavegame();                          // Get previously saved data
     Snake *Anaconda   = malloc(sizeof(Snake));                   // First  Snake
+    memset(Anaconda, 0, sizeof(Snake));
     Snake *Bushmaster = malloc(sizeof(Snake));                   // Second Snake
+    memset(Bushmaster, 0, sizeof(Snake));
     Actors *AllActors = malloc(sizeof(Actors));                  // For render level, look at winproc.h
             AllActors->LevelWin.x = GSets.Map.x * GSets.Scale;   // Set game level size in px
             AllActors->LevelWin.y = GSets.Map.y * GSets.Scale;   // Heap is used instead of stack to keep stack less than 1MB
-        Anaconda->Win             = 0;
-        Anaconda->Coins           = 0;                           // A crutch that prevents you from filling your MaxScore with garbage
         Anaconda->MaxScore        = GSets.MaxS;
-        Bushmaster->Win           = 0;
     RECT ScoreTable = { 0, 0, 7 * GSets.Scale,
                        (GSets.Map.x/3 - 1) * GSets.Scale
                         + GSets.Scale/2 };
@@ -86,7 +85,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     GetGrid(AllActors, GSets.Map, GSets.Scale);             // Array of points to draw the grid
     GetSnakeColors(AllActors, GSets.Mode);                  // Array of snakes cells colors
     SnakeRestart(&GSets, &Apple, &GameTicks,
-                 Anaconda, Bushmaster, &State);             // Game first initialization
+                 Anaconda, Bushmaster, &State);             // Game logic first initialization
     DrawInterruption(GameMap, AllActors);
 
     for (;(Anaconda->Len < 253) || (Bushmaster->Len < 253);) // Main Game loop. Remember, the Snake.Body[254]
@@ -147,7 +146,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         if (GetTickCount() > NextRenderTick)
         {
             // Draw level and actors
-            ActorsShow     (GameMap, AllActors, GSets.Mode);
+            ActorsShow     (GameMap, AllActors);
             NextRenderTick += RENDERLAG;
         }
     }
@@ -155,7 +154,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 }
 
 // Make main menu
-static inline void MakeMenu(HWND hwnd, SaveData *GSets, GameLang *Marks)
+static void MakeMenu(HWND hwnd, SaveData *GSets, GameLang *Marks)
 {
 
     HMENU MenuBar = CreateMenu();
@@ -181,95 +180,94 @@ static inline void MakeMenu(HWND hwnd, SaveData *GSets, GameLang *Marks)
 }
 
 // Calculate Snake's coords before rendering
-static inline void GetSnakesCells(Actors *Allobj, Snake const *Vyper, Snake const *Wutu, SaveData *const Sets)
+static void GetSnakesCells(Actors *AllObj, Snake const *Vyper, Snake const *Wutu, SaveData *const Sets)
 {
-    Allobj->ALen = Vyper->Len;
+    AllObj->ALen = Vyper->Len;
     for (short i = 0; i < Vyper->Len; i++)
     {
-        Allobj->ASnake[i].left   = Vyper->Body[i].x * Sets->Scale;
-        Allobj->ASnake[i].top    = Vyper->Body[i].y * Sets->Scale;
-        Allobj->ASnake[i].right  = (Vyper->Body[i].x + 1) * Sets->Scale;
-        Allobj->ASnake[i].bottom = (Vyper->Body[i].y + 1) * Sets->Scale;
+        AllObj->ASnake[i].left   = Vyper->Body[i].x * Sets->Scale;
+        AllObj->ASnake[i].top    = Vyper->Body[i].y * Sets->Scale;
+        AllObj->ASnake[i].right  = (Vyper->Body[i].x + 1) * Sets->Scale;
+        AllObj->ASnake[i].bottom = (Vyper->Body[i].y + 1) * Sets->Scale;
     }
     if (!Sets->Mode) return;  // Single Player
 
-    Allobj->BLen = Wutu->Len;
+    AllObj->BLen = Wutu->Len;
     for (short i = 0; i < Wutu->Len; i++)
     {
-        Allobj->BSnake[i].left   = Wutu->Body[i].x * Sets->Scale + 1;
-        Allobj->BSnake[i].top    = Wutu->Body[i].y * Sets->Scale + 1;
-        Allobj->BSnake[i].right  = (Wutu->Body[i].x + 1) * Sets->Scale + 1;
-        Allobj->BSnake[i].bottom = (Wutu->Body[i].y + 1) * Sets->Scale + 1;
+        AllObj->BSnake[i].left   = Wutu->Body[i].x * Sets->Scale + 1;
+        AllObj->BSnake[i].top    = Wutu->Body[i].y * Sets->Scale + 1;
+        AllObj->BSnake[i].right  = (Wutu->Body[i].x + 1) * Sets->Scale + 1;
+        AllObj->BSnake[i].bottom = (Wutu->Body[i].y + 1) * Sets->Scale + 1;
     }
 }
 
 // Calculate Snake's cells color gradient (one time)
-static void GetSnakeColors(Actors* Allobj, unsigned char Mode)
+static void GetSnakeColors(Actors* AllObj, unsigned char Mode)
 {
     for (short i = 0; i <= 63; i++)
     {
-        Allobj->AColor[i] = Allobj->AColor[126 - i]
-                          = Allobj->AColor[126 + i]
-                          = Allobj->AColor[253 - i]
+        AllObj->AColor[i] = AllObj->AColor[126 - i]
+                          = AllObj->AColor[126 + i]
+                          = AllObj->AColor[253 - i]
                           = RGB(i * 4, 249, 255 - i * 4);
-        if (Mode)
-        {
-            Allobj->BColor[i] = Allobj->BColor[126 - i]
-                              = Allobj->BColor[126 + i]
-                              = Allobj->BColor[253 - i]
-                              = RGB(191 + i, i * 4, 255 - i);
-        }
+        if (!Mode) return;
+
+        AllObj->BColor[i] = AllObj->BColor[126 - i]
+                          = AllObj->BColor[126 + i]
+                          = AllObj->BColor[253 - i]
+                          = RGB(191 + i, i * 4, 255 - i);
     }
 }
 
 // Calculate grid lines only one time, use every 16ms
-static void GetGrid(Actors *Allobj, CPoint Map, short Scale)
+static void GetGrid(Actors *AllObj, CPoint Map, short Scale)
 {
     short counter = 0;
     for (short i = 0; i < Map.x; i++)
     {
-        Allobj->Grid[counter].left    = (i + 1) * Scale;
-        Allobj->Grid[counter].top     = 1;
-        Allobj->Grid[counter].right   = (i + 1) * Scale;
-        Allobj->Grid[counter].bottom  = Map.y * Scale - 1;
+        AllObj->Grid[counter].left    = (i + 1) * Scale;
+        AllObj->Grid[counter].top     = 1;
+        AllObj->Grid[counter].right   = (i + 1) * Scale;
+        AllObj->Grid[counter].bottom  = Map.y * Scale - 1;
         counter++;
     }
     for (short i = 0; i < Map.y; i++)
     {
-        Allobj->Grid[counter].left    = 1;
-        Allobj->Grid[counter].top     = (i + 1) * Scale;
-        Allobj->Grid[counter].right   = Map.x * Scale - 1;
-        Allobj->Grid[counter].bottom  = (i + 1) * Scale;
+        AllObj->Grid[counter].left    = 1;
+        AllObj->Grid[counter].top     = (i + 1) * Scale;
+        AllObj->Grid[counter].right   = Map.x * Scale - 1;
+        AllObj->Grid[counter].bottom  = (i + 1) * Scale;
         counter++;
     }
-    Allobj->GLen = counter;
+    AllObj->GLen = counter;
 }
 
 // Calculate Apple coordinates & color
-static inline void SetApple(Actors *Allobj, Fruit *Apple, short Scale)
+static void SetApple(Actors *AllObj, Fruit *Apple, short Scale)
 {
     switch (Apple->Price)
     {
     case ColorGold:
-        Allobj->AppleColor = 0x000080FF;
+        AllObj->AppleColor = 0x000080FF;
         break;
 
     case ColorBlack:
-        Allobj->AppleColor = 0x00080808;
+        AllObj->AppleColor = 0x00080808;
         break;
 
     default:
-        Allobj->AppleColor = 0x000000FF;
+        AllObj->AppleColor = 0x000000FF;
         break;
     }
-    Allobj->RApple.left   = Apple->Coord.x * Scale + 2;
-    Allobj->RApple.top    = Apple->Coord.y * Scale + 2;
-    Allobj->RApple.right  = (Apple->Coord.x + 1) * Scale - 2;
-    Allobj->RApple.bottom = (Apple->Coord.y + 1) * Scale - 2;
+    AllObj->RApple.left   = Apple->Coord.x * Scale + 2;
+    AllObj->RApple.top    = Apple->Coord.y * Scale + 2;
+    AllObj->RApple.right  = (Apple->Coord.x + 1) * Scale - 2;
+    AllObj->RApple.bottom = (Apple->Coord.y + 1) * Scale - 2;
 }
 
 // Generates text for game boards
-static inline void SetInfo(wchar_t *Score, GameLang *Marks, Snake *Vyper, SaveData *Sets)
+static void SetInfo(wchar_t *Score, GameLang *Marks, Snake *Vyper, SaveData *Sets)
 {
     Sets->Mode ? swprintf_s(Score, 63, Marks->str1501, Vyper->Coins, Vyper->Win):
                  swprintf_s(Score, 63, Marks->str1502, Vyper->Coins, Vyper->MaxScore);
@@ -281,7 +279,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM l
     return DefWindowProc(hwnd, message, wparam, lparam);
 }
 
-static inline void RunAppCopy(void)
+static void RunAppCopy(void)
 {
      wchar_t path[256];
      GetModuleFileNameW(0, path, 256); // Get full name of snake.exe

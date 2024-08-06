@@ -16,7 +16,7 @@ static inline void DrawGrid(HDC Sdc, Actors const *AllObj)
      }
 }
 
-static inline void DrawSnakes(HDC Sdc, Actors const *AllObj, unsigned char Mode)
+static inline void DrawSnakes(HDC Sdc, Actors const *AllObj)
 {
      int round = (AllObj->ASnake[0].right - AllObj->ASnake[0].left) / 4; // In order not to drag the scale, we calculate again
      for (short i = 0; i < AllObj->ALen; i++)
@@ -26,7 +26,7 @@ static inline void DrawSnakes(HDC Sdc, Actors const *AllObj, unsigned char Mode)
           RoundRect        (Sdc, AllObj->ASnake[i].left, AllObj->ASnake[i].top,
                             AllObj->ASnake[i].right, AllObj->ASnake[i].bottom, round, round);
      }
-     if (!Mode) return;  // If single player
+     if (!AllObj->BLen) return;  // If single player
 
      for (short i = 0; i < AllObj->BLen; i++)
      {
@@ -47,7 +47,7 @@ static inline void DrawApple(HDC Sdc, Actors *AllObj)
 }
 
 // Draw level and the game Actors
-void ActorsShow(HWND Window, Actors *AllObj, unsigned char Mode)
+void ActorsShow(HWND Window, Actors *AllObj)
 {
      HDC Dc        = GetDC(Window);
      HDC memDC     = CreateCompatibleDC(Dc);
@@ -61,7 +61,7 @@ void ActorsShow(HWND Window, Actors *AllObj, unsigned char Mode)
 
      DrawGrid        (memDC, AllObj);
      DrawApple       (memDC, AllObj);
-     DrawSnakes      (memDC, AllObj, Mode);
+     DrawSnakes      (memDC, AllObj);
 
      BitBlt          (Dc, 0, 0, AllObj->LevelWin.x, AllObj->LevelWin.y, memDC, 0, 0, SRCCOPY);
      DeleteDC        (memDC);
